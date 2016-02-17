@@ -1,0 +1,864 @@
+# project ns (3.24) configured on Mon Feb 15 15:39:10 2016 by
+# waf 1.8.12 (abi 98, python 2070af0 on darwin)
+# using waf configure --enable-examples --enable-tests --with-pybindgen ../pybindgen-0.17.0.post41+ngd10fa60
+#
+----------------------------------------
+Setting top to
+/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24
+----------------------------------------
+Setting out to
+/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/build
+----------------------------------------
+Checking for 'clang' (C compiler)
+find program=['clang'] paths=['/Users/joshpfosi/Qt/5.4/clang_64/bin', '/opt/local/bin', '/opt/local/sbin', '/Users/joshpfosi/bin/Sencha/Cmd/5.1.3.61', '/Users/joshpfosi/.rvm/gems/ruby-1.9.3-p547/bin', '/Users/joshpfosi/.rvm/gems/ruby-1.9.3-p547@global/bin', '/Users/joshpfosi/.rvm/rubies/ruby-1.9.3-p547/bin', '/Users/joshpfosi/bin/Sencha/Cmd/5.1.3.61', '/usr/local/bin', '/usr/bin', '/bin', '/usr/sbin', '/sbin', '/opt/X11/bin', '/Library/TeX/texbin', '/Users/joshpfosi/.rvm/bin'] var='CC' -> ['/usr/bin/clang']
+find program=['ar'] paths=['/Users/joshpfosi/Qt/5.4/clang_64/bin', '/opt/local/bin', '/opt/local/sbin', '/Users/joshpfosi/bin/Sencha/Cmd/5.1.3.61', '/Users/joshpfosi/.rvm/gems/ruby-1.9.3-p547/bin', '/Users/joshpfosi/.rvm/gems/ruby-1.9.3-p547@global/bin', '/Users/joshpfosi/.rvm/rubies/ruby-1.9.3-p547/bin', '/Users/joshpfosi/bin/Sencha/Cmd/5.1.3.61', '/usr/local/bin', '/usr/bin', '/bin', '/usr/sbin', '/sbin', '/opt/X11/bin', '/Library/TeX/texbin', '/Users/joshpfosi/.rvm/bin'] var='AR' -> ['/opt/local/bin/ar']
+/usr/bin/clang
+----------------------------------------
+Checking for cc version
+6.1.0
+----------------------------------------
+Checking for 'clang++' (C++ compiler)
+find program=['clang++'] paths=['/Users/joshpfosi/Qt/5.4/clang_64/bin', '/opt/local/bin', '/opt/local/sbin', '/Users/joshpfosi/bin/Sencha/Cmd/5.1.3.61', '/Users/joshpfosi/.rvm/gems/ruby-1.9.3-p547/bin', '/Users/joshpfosi/.rvm/gems/ruby-1.9.3-p547@global/bin', '/Users/joshpfosi/.rvm/rubies/ruby-1.9.3-p547/bin', '/Users/joshpfosi/bin/Sencha/Cmd/5.1.3.61', '/usr/local/bin', '/usr/bin', '/bin', '/usr/sbin', '/sbin', '/opt/X11/bin', '/Library/TeX/texbin', '/Users/joshpfosi/.rvm/bin'] var='CXX' -> ['/usr/bin/clang++']
+(tool ar is already loaded, skipping)
+/usr/bin/clang++
+----------------------------------------
+Checking for program 'python'
+/usr/bin/python
+find program=['python'] paths=['/Users/joshpfosi/Qt/5.4/clang_64/bin', '/opt/local/bin', '/opt/local/sbin', '/Users/joshpfosi/bin/Sencha/Cmd/5.1.3.61', '/Users/joshpfosi/.rvm/gems/ruby-1.9.3-p547/bin', '/Users/joshpfosi/.rvm/gems/ruby-1.9.3-p547@global/bin', '/Users/joshpfosi/.rvm/rubies/ruby-1.9.3-p547/bin', '/Users/joshpfosi/bin/Sencha/Cmd/5.1.3.61', '/usr/local/bin', '/usr/bin', '/bin', '/usr/sbin', '/sbin', '/opt/X11/bin', '/Library/TeX/texbin', '/Users/joshpfosi/.rvm/bin'] var='PYTHON' -> ['/usr/bin/python']
+['/usr/bin/python', '-c', 'import imp;print(imp.get_tag())']
+err: Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+AttributeError: 'module' object has no attribute 'get_tag'
+
+['/usr/bin/python', '-c', 'import sys\nfor x in sys.version_info: print(str(x))']
+out: 2
+7
+10
+final
+0
+
+['/usr/bin/python', '-c', "from distutils.sysconfig import get_config_var, get_python_lib\n\nprint(repr(get_python_lib(standard_lib=0, prefix='/usr/local') or ''))"]
+out: '/usr/local/lib/python2.7/site-packages'
+
+'/usr/local/lib/python2.7/site-packages'
+
+['/usr/bin/python', '-c', "from distutils.sysconfig import get_config_var, get_python_lib\n\nprint(repr(get_python_lib(plat_specific=1, standard_lib=0, prefix='/usr/local') or ''))"]
+out: '/usr/local/lib/python2.7/site-packages'
+
+'/usr/local/lib/python2.7/site-packages'
+
+----------------------------------------
+Checking for python version
+(2, 7, 10, 'final', 0)
+['/usr/bin/python', '-c', "from distutils.sysconfig import get_config_var, get_python_lib\n\nprint(repr(get_config_var('prefix') or ''))\nprint(repr(get_config_var('SO') or ''))\nprint(repr(get_config_var('LDFLAGS') or ''))\nprint(repr(get_config_var('LIBDIR') or ''))\nprint(repr(get_config_var('LIBPL') or ''))\nprint(repr(get_config_var('INCLUDEPY') or ''))\nprint(repr(get_config_var('Py_ENABLE_SHARED') or ''))\nprint(repr(get_config_var('MACOSX_DEPLOYMENT_TARGET') or ''))\nprint(repr(get_config_var('LDSHARED') or ''))\nprint(repr(get_config_var('CFLAGS') or ''))\nprint(repr(get_config_var('LDVERSION') or ''))"]
+out: '/System/Library/Frameworks/Python.framework/Versions/2.7'
+'.so'
+'-arch x86_64 -arch i386            -Wl,-F.'
+'/System/Library/Frameworks/Python.framework/Versions/2.7/lib'
+'/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/config'
+'/System/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7'
+''
+'10.11'
+'cc -bundle -undefined dynamic_lookup -arch x86_64 -arch i386            -Wl,-F.'
+'-fno-strict-aliasing -fno-common -dynamic -arch x86_64 -arch i386 -g -Os -pipe -fno-common -fno-strict-aliasing -fwrapv -DENABLE_DTRACE -DMACOSX -DNDEBUG -Wall -Wstrict-prototypes -Wshorten-64-to-32 -DNDEBUG -g -fwrapv -Os -Wall -Wstrict-prototypes -DENABLE_DTRACE'
+''
+
+'/System/Library/Frameworks/Python.framework/Versions/2.7'
+'.so'
+'-arch x86_64 -arch i386            -Wl,-F.'
+'/System/Library/Frameworks/Python.framework/Versions/2.7/lib'
+'/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/config'
+'/System/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7'
+''
+'10.11'
+'cc -bundle -undefined dynamic_lookup -arch x86_64 -arch i386            -Wl,-F.'
+'-fno-strict-aliasing -fno-common -dynamic -arch x86_64 -arch i386 -g -Os -pipe -fno-common -fno-strict-aliasing -fwrapv -DENABLE_DTRACE -DMACOSX -DNDEBUG -Wall -Wstrict-prototypes -Wshorten-64-to-32 -DNDEBUG -g -fwrapv -Os -Wall -Wstrict-prototypes -DENABLE_DTRACE'
+''
+
+Configuration returned from ['/usr/bin/python']:
+prefix = '/System/Library/Frameworks/Python.framework/Versions/2.7'
+SO = '.so'
+LDFLAGS = '-arch x86_64 -arch i386            -Wl,-F.'
+LIBDIR = '/System/Library/Frameworks/Python.framework/Versions/2.7/lib'
+LIBPL = '/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/config'
+INCLUDEPY = '/System/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7'
+Py_ENABLE_SHARED = ''
+MACOSX_DEPLOYMENT_TARGET = '10.11'
+LDSHARED = 'cc -bundle -undefined dynamic_lookup -arch x86_64 -arch i386            -Wl,-F.'
+CFLAGS = '-fno-strict-aliasing -fno-common -dynamic -arch x86_64 -arch i386 -g -Os -pipe -fno-common -fno-strict-aliasing -fwrapv -DENABLE_DTRACE -DMACOSX -DNDEBUG -Wall -Wstrict-prototypes -Wshorten-64-to-32 -DNDEBUG -g -fwrapv -Os -Wall -Wstrict-prototypes -DENABLE_DTRACE'
+LDVERSION = ''
+
+----------------------------------------
+python-config
+/usr/bin/python-config
+find program=['/usr/bin/python-config', 'python2.7-config', 'python-config-2.7', 'python2.7m-config'] paths=['/Users/joshpfosi/Qt/5.4/clang_64/bin', '/opt/local/bin', '/opt/local/sbin', '/Users/joshpfosi/bin/Sencha/Cmd/5.1.3.61', '/Users/joshpfosi/.rvm/gems/ruby-1.9.3-p547/bin', '/Users/joshpfosi/.rvm/gems/ruby-1.9.3-p547@global/bin', '/Users/joshpfosi/.rvm/rubies/ruby-1.9.3-p547/bin', '/Users/joshpfosi/bin/Sencha/Cmd/5.1.3.61', '/usr/local/bin', '/usr/bin', '/bin', '/usr/sbin', '/sbin', '/opt/X11/bin', '/Library/TeX/texbin', '/Users/joshpfosi/.rvm/bin'] var='PYTHON_CONFIG' -> ['/usr/bin/python-config']
+------------------------------------------------------------------
+Asking python-config for pyembed '--cflags --libs --ldflags' flags
+['/usr/bin/python-config', '--cflags', '--libs', '--ldflags']
+out: -I/System/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7 -I/System/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7 -fno-strict-aliasing -fno-common -dynamic -arch x86_64 -arch i386 -g -Os -pipe -fno-common -fno-strict-aliasing -fwrapv -DENABLE_DTRACE -DMACOSX -DNDEBUG -Wall -Wstrict-prototypes -Wshorten-64-to-32 -DNDEBUG -g -fwrapv -Os -Wall -Wstrict-prototypes -DENABLE_DTRACE
+-lpython2.7 -ldl -framework CoreFoundation
+-L/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/config -lpython2.7 -ldl -framework CoreFoundation
+
+yes
+------------------------------------------------------------------
+Getting pyembed flags from python-config
+==>
+
+#include <Python.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
+	void Py_Initialize(void);
+	void Py_Finalize(void);
+#ifdef __cplusplus
+}
+#endif
+int main(int argc, char **argv)
+{
+   (void)argc; (void)argv;
+   Py_Initialize();
+   Py_Finalize();
+   return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_0895fb22a0efe48427b547ef6a1c99ad/test.cpp[0m
+
+['/usr/bin/clang++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-fno-strict-aliasing', '-fno-common', '-dynamic', '-arch', 'x86_64', '-arch', 'i386', '-fno-common', '-fno-strict-aliasing', '-fwrapv', '-fwrapv', '-I/System/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DPYTHONDIR="/usr/local/lib/python2.7/site-packages"', '-DPYTHONARCHDIR="/usr/local/lib/python2.7/site-packages"', '-DHAVE_PYEMBED=1', '-DENABLE_DTRACE', '-DMACOSX', '-DNDEBUG', '-DNDEBUG', '-DENABLE_DTRACE', '../test.cpp', '-c', '-o', '/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/build/.conf_check_0895fb22a0efe48427b547ef6a1c99ad/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_0895fb22a0efe48427b547ef6a1c99ad/testbuild/testprog[0m
+
+['/usr/bin/clang++', '-arch', 'x86_64', '-arch', 'i386', 'test.cpp.1.o', '-o', '/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/build/.conf_check_0895fb22a0efe48427b547ef6a1c99ad/testbuild/testprog', '-framework', 'CoreFoundation', '-L/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/config', '-lpython2.7', '-ldl']
+yes
+------------------------------------------------------------------
+Asking python-config for pyext '--cflags --libs --ldflags' flags
+['/usr/bin/python-config', '--cflags', '--libs', '--ldflags']
+out: -I/System/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7 -I/System/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7 -fno-strict-aliasing -fno-common -dynamic -arch x86_64 -arch i386 -g -Os -pipe -fno-common -fno-strict-aliasing -fwrapv -DENABLE_DTRACE -DMACOSX -DNDEBUG -Wall -Wstrict-prototypes -Wshorten-64-to-32 -DNDEBUG -g -fwrapv -Os -Wall -Wstrict-prototypes -DENABLE_DTRACE
+-lpython2.7 -ldl -framework CoreFoundation
+-L/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/config -lpython2.7 -ldl -framework CoreFoundation
+
+yes
+------------------------------------------------------------------
+Getting pyext flags from python-config
+==>
+
+#include <Python.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
+	void Py_Initialize(void);
+	void Py_Finalize(void);
+#ifdef __cplusplus
+}
+#endif
+int main(int argc, char **argv)
+{
+   (void)argc; (void)argv;
+   Py_Initialize();
+   Py_Finalize();
+   return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_adf8e85e675a50a7097060c1524441f3/test.cpp[0m
+
+['/usr/bin/clang++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-fPIC', '-fno-strict-aliasing', '-fno-common', '-dynamic', '-arch', 'x86_64', '-arch', 'i386', '-fno-common', '-fno-strict-aliasing', '-fwrapv', '-fwrapv', '-fPIC', '-I/System/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DPYTHONDIR="/usr/local/lib/python2.7/site-packages"', '-DPYTHONARCHDIR="/usr/local/lib/python2.7/site-packages"', '-DHAVE_PYEMBED=1', '-DHAVE_PYEXT=1', '-DENABLE_DTRACE', '-DMACOSX', '-DNDEBUG', '-DNDEBUG', '-DENABLE_DTRACE', '../test.cpp', '-c', '-o', '/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/build/.conf_check_adf8e85e675a50a7097060c1524441f3/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_adf8e85e675a50a7097060c1524441f3/testbuild/testprog.so[0m
+
+['/usr/bin/clang++', '-arch', 'x86_64', '-arch', 'i386', '-bundle', '-undefined', 'dynamic_lookup', 'test.cpp.1.o', '-o', '/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/build/.conf_check_adf8e85e675a50a7097060c1524441f3/testbuild/testprog.so', '-framework', 'CoreFoundation', '-L/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/config', '-lpython2.7', '-ldl']
+yes
+------------------------------------------------------------------
+Checking for compilation flag -Wno-array-bounds support
+==>
+int main() { return 0; }
+<==
+[1/1] Compiling [32mbuild/.conf_check_ba3c5df4ba8f651de5cc66e2314e7d02/test.cpp[0m
+
+['/usr/bin/clang++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-Wno-array-bounds', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DPYTHONDIR="/usr/local/lib/python2.7/site-packages"', '-DPYTHONARCHDIR="/usr/local/lib/python2.7/site-packages"', '-DHAVE_PYEMBED=1', '-DHAVE_PYEXT=1', '-DHAVE_PYTHON_H=1', '../test.cpp', '-c', '-o', '/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/build/.conf_check_ba3c5df4ba8f651de5cc66e2314e7d02/testbuild/test.cpp.1.o']
+ok
+------------------------------------------------------------------
+Checking for pybindgen location
+../pybindgen-0.17.0.post41+ngd10fa60 (given)
+------------------------------------------------------------------
+Checking for python module 'pybindgen'
+['/usr/bin/python', '-c', "\nimport pybindgen as current_module\nversion = getattr(current_module, '__version__', None)\nif version is not None:\n\tprint(str(version))\nelse:\n\tprint('unknown version')\n"]
+out: 0.17.0.post41+ngd10fa60
+
+0.17.0.post41+ngd10fa60
+------------------------------------------------------------------
+Checking for pybindgen version
+0.17.0.post41+ngd10fa60
+------------------------------------------------------------------
+Checking for code snippet
+==>
+
+#include <stdint.h>
+#include <vector>
+
+int main ()
+{
+   std::vector< uint64_t > t = std::vector< unsigned long > ();
+   return 0;
+}
+
+<==
+[1/1] Compiling [32mbuild/.conf_check_7194c71659e21b552c84a1e385b3db6e/test.cpp[0m
+
+['/usr/bin/clang++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DPYTHONDIR="/usr/local/lib/python2.7/site-packages"', '-DPYTHONARCHDIR="/usr/local/lib/python2.7/site-packages"', '-DHAVE_PYEMBED=1', '-DHAVE_PYEXT=1', '-DHAVE_PYTHON_H=1', '../test.cpp', '-c', '-o', '/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/build/.conf_check_7194c71659e21b552c84a1e385b3db6e/testbuild/test.cpp.1.o']
+err: ../test.cpp:7:28: error: no viable conversion from 'vector<unsigned long>' to 'vector<uint64_t>'
+   std::vector< uint64_t > t = std::vector< unsigned long > ();
+                           ^   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/vector:565:5: note: candidate constructor not viable: no known conversion from 'std::vector<unsigned long>' to 'const std::__1::vector<unsigned long long, std::__1::allocator<unsigned long long> > &' for 1st argument
+    vector(const vector& __x);
+    ^
+1 error generated.
+
+from /Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/bindings/python: Test does not build: Traceback (most recent call last):
+  File "/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/.waf-1.8.12-f00e5b53f6bbeab1384a38c9cc5d51f7/waflib/Configure.py", line 339, in run_build
+    bld.compile()
+  File "/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/.waf-1.8.12-f00e5b53f6bbeab1384a38c9cc5d51f7/waflib/Build.py", line 182, in compile
+    raise Errors.BuildError(self.producer.error)
+BuildError: Build failed
+ -> task in 'testprog' failed (exit status 1): 
+	{task 4316937296: cxx test.cpp -> test.cpp.1.o}
+['/usr/bin/clang++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DPYTHONDIR="/usr/local/lib/python2.7/site-packages"', '-DPYTHONARCHDIR="/usr/local/lib/python2.7/site-packages"', '-DHAVE_PYEMBED=1', '-DHAVE_PYEXT=1', '-DHAVE_PYTHON_H=1', '../test.cpp', '-c', '-o', '/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/build/.conf_check_7194c71659e21b552c84a1e385b3db6e/testbuild/test.cpp.1.o']
+
+no
+from /Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/bindings/python: The configuration failed
+------------------------------------------------------------------
+Checking for types uint64_t and unsigned long equivalence
+yes
+------------------------------------------------------------------
+Checking for code snippet
+==>
+
+#include <stdint.h>
+#include <vector>
+
+int main ()
+{
+   std::vector< uint64_t > t = std::vector< unsigned long long > ();
+   return 0;
+}
+
+<==
+[1/1] Compiling [32mbuild/.conf_check_999325e25fe6fdd5f1cd145c59bb20f3/test.cpp[0m
+
+['/usr/bin/clang++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DPYTHONDIR="/usr/local/lib/python2.7/site-packages"', '-DPYTHONARCHDIR="/usr/local/lib/python2.7/site-packages"', '-DHAVE_PYEMBED=1', '-DHAVE_PYEXT=1', '-DHAVE_PYTHON_H=1', '../test.cpp', '-c', '-o', '/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/build/.conf_check_999325e25fe6fdd5f1cd145c59bb20f3/testbuild/test.cpp.1.o']
+yes
+------------------------------------------------------------------
+Checking for types uint64_t and unsigned long long equivalence
+no
+------------------------------------------------------------------
+Checking for the apidefs that can be used for Python bindings
+gcc-ILP32
+------------------------------------------------------------------
+Checking for internal GCC cxxabi
+==>
+
+# include <cxxabi.h>
+int main ()
+{
+   const abi::__si_class_type_info *_typeinfo  __attribute__((unused)) = NULL;
+   return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_d857d25d3a1253b0ff5a7add1cc65236/test.cpp[0m
+
+['/usr/bin/clang++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DPYTHONDIR="/usr/local/lib/python2.7/site-packages"', '-DPYTHONARCHDIR="/usr/local/lib/python2.7/site-packages"', '-DHAVE_PYEMBED=1', '-DHAVE_PYEXT=1', '-DHAVE_PYTHON_H=1', '../test.cpp', '-c', '-o', '/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/build/.conf_check_d857d25d3a1253b0ff5a7add1cc65236/testbuild/test.cpp.1.o']
+err: ../test.cpp:5:15: error: no type named '__si_class_type_info' in namespace '__cxxabiv1'
+   const abi::__si_class_type_info *_typeinfo  __attribute__((unused)) = NULL;
+         ~~~~~^
+1 error generated.
+
+from /Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/bindings/python: Test does not build: Traceback (most recent call last):
+  File "/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/.waf-1.8.12-f00e5b53f6bbeab1384a38c9cc5d51f7/waflib/Configure.py", line 339, in run_build
+    bld.compile()
+  File "/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/.waf-1.8.12-f00e5b53f6bbeab1384a38c9cc5d51f7/waflib/Build.py", line 182, in compile
+    raise Errors.BuildError(self.producer.error)
+BuildError: Build failed
+ -> task in 'testprog' failed (exit status 1): 
+	{task 4316909840: cxx test.cpp -> test.cpp.1.o}
+['/usr/bin/clang++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DPYTHONDIR="/usr/local/lib/python2.7/site-packages"', '-DPYTHONARCHDIR="/usr/local/lib/python2.7/site-packages"', '-DHAVE_PYEMBED=1', '-DHAVE_PYEXT=1', '-DHAVE_PYTHON_H=1', '../test.cpp', '-c', '-o', '/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/build/.conf_check_d857d25d3a1253b0ff5a7add1cc65236/testbuild/test.cpp.1.o']
+
+incomplete
+from /Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/bindings/python: The configuration failed
+------------------------------------------------------------------
+Checking for python module 'pygccxml'
+['/usr/bin/python', '-c', "\nimport pygccxml as current_module\nversion = getattr(current_module, '__version__', None)\nif version is not None:\n\tprint(str(version))\nelse:\n\tprint('unknown version')\n"]
+err: Traceback (most recent call last):
+  File "<string>", line 2, in <module>
+ImportError: No module named pygccxml
+
+not found
+from /Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/bindings/python: Could not find the python module 'pygccxml'
+------------------------------------------------------------------
+Checking boost includes
+headers not found, please provide a --boost-includes argument (see help)
+from /Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/src: The configuration failed
+------------------------------------------------------------------
+Checking boost includes
+headers not found, please provide a --boost-includes argument (see help)
+from /Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/src: The configuration failed
+------------------------------------------------------------------
+Checking for click location
+not found
+------------------------------------------------------------------
+Checking for program 'pkg-config'
+/usr/local/bin/pkg-config
+find program=['pkg-config'] paths=['/Users/joshpfosi/Qt/5.4/clang_64/bin', '/opt/local/bin', '/opt/local/sbin', '/Users/joshpfosi/bin/Sencha/Cmd/5.1.3.61', '/Users/joshpfosi/.rvm/gems/ruby-1.9.3-p547/bin', '/Users/joshpfosi/.rvm/gems/ruby-1.9.3-p547@global/bin', '/Users/joshpfosi/.rvm/rubies/ruby-1.9.3-p547/bin', '/Users/joshpfosi/bin/Sencha/Cmd/5.1.3.61', '/usr/local/bin', '/usr/bin', '/bin', '/usr/sbin', '/sbin', '/opt/X11/bin', '/Library/TeX/texbin', '/Users/joshpfosi/.rvm/bin'] var='PKGCONFIG' -> ['/usr/local/bin/pkg-config']
+------------------------------------------------------------------
+Checking for 'gtk+-2.0' >= 2.12
+['/usr/local/bin/pkg-config', '--atleast-version=2.12', 'gtk+-2.0']
+not found
+from /Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/src/config-store: The configuration failed
+------------------------------------------------------------------
+Checking for 'libxml-2.0' >= 2.7
+['/usr/local/bin/pkg-config', '--atleast-version=2.7', 'libxml-2.0']
+['/usr/local/bin/pkg-config', '--cflags', '--libs', 'libxml-2.0']
+out: -I/usr/include/libxml2 -lxml2 
+
+yes
+------------------------------------------------------------------
+Checking for type uint128_t
+==>
+#include <stdint.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	if ((uint128_t *) 0) return 0;
+	if (sizeof (uint128_t)) return 0;
+	return 1;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_e015697d0fdb23910a234b7a96a69eb4/test.cpp[0m
+
+['/usr/bin/clang++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '../test.cpp', '-c', '-o', '/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/build/.conf_check_e015697d0fdb23910a234b7a96a69eb4/testbuild/test.cpp.1.o']
+err: ../test.cpp:5:7: error: use of undeclared identifier 'uint128_t'
+        if ((uint128_t *) 0) return 0;
+             ^
+../test.cpp:5:18: error: expected expression
+        if ((uint128_t *) 0) return 0;
+                        ^
+../test.cpp:6:14: error: use of undeclared identifier 'uint128_t'
+        if (sizeof (uint128_t)) return 0;
+                    ^
+3 errors generated.
+
+from /Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/src/core: Test does not build: Traceback (most recent call last):
+  File "/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/.waf-1.8.12-f00e5b53f6bbeab1384a38c9cc5d51f7/waflib/Configure.py", line 339, in run_build
+    bld.compile()
+  File "/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/.waf-1.8.12-f00e5b53f6bbeab1384a38c9cc5d51f7/waflib/Build.py", line 182, in compile
+    raise Errors.BuildError(self.producer.error)
+BuildError: Build failed
+ -> task in 'testprog' failed (exit status 1): 
+	{task 4317052304: cxx test.cpp -> test.cpp.1.o}
+['/usr/bin/clang++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '../test.cpp', '-c', '-o', '/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/build/.conf_check_e015697d0fdb23910a234b7a96a69eb4/testbuild/test.cpp.1.o']
+
+not found
+from /Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/src/core: The configuration failed
+------------------------------------------------------------------
+Checking for type __uint128_t
+==>
+#include <stdint.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	if ((__uint128_t *) 0) return 0;
+	if (sizeof (__uint128_t)) return 0;
+	return 1;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_13cd05f09e3937561f2c149d504607e5/test.cpp[0m
+
+['/usr/bin/clang++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '../test.cpp', '-c', '-o', '/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/build/.conf_check_13cd05f09e3937561f2c149d504607e5/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_13cd05f09e3937561f2c149d504607e5/testbuild/testprog[0m
+
+['/usr/bin/clang++', 'test.cpp.1.o', '-o', '/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/build/.conf_check_13cd05f09e3937561f2c149d504607e5/testbuild/testprog']
+yes
+------------------------------------------------------------------
+Checking high precision implementation
+128-bit integer (default)
+------------------------------------------------------------------
+Checking for header stdint.h
+==>
+#include <stdint.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_576647804f21dc2a2e48de1a6d4f2a2d/test.cpp[0m
+
+['/usr/bin/clang++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '../test.cpp', '-c', '-o', '/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/build/.conf_check_576647804f21dc2a2e48de1a6d4f2a2d/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_576647804f21dc2a2e48de1a6d4f2a2d/testbuild/testprog[0m
+
+['/usr/bin/clang++', 'test.cpp.1.o', '-o', '/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/build/.conf_check_576647804f21dc2a2e48de1a6d4f2a2d/testbuild/testprog']
+yes
+------------------------------------------------------------------
+Checking for header inttypes.h
+==>
+#include <inttypes.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_ce20f8212f41576a8b374d78ffff50b6/test.cpp[0m
+
+['/usr/bin/clang++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '-DHAVE_STDINT_H=1', '../test.cpp', '-c', '-o', '/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/build/.conf_check_ce20f8212f41576a8b374d78ffff50b6/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_ce20f8212f41576a8b374d78ffff50b6/testbuild/testprog[0m
+
+['/usr/bin/clang++', 'test.cpp.1.o', '-o', '/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/build/.conf_check_ce20f8212f41576a8b374d78ffff50b6/testbuild/testprog']
+yes
+------------------------------------------------------------------
+Checking for header sys/inttypes.h
+==>
+#include <sys/inttypes.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_e2d723c5c78eeb7c673ead58d5028082/test.cpp[0m
+
+['/usr/bin/clang++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '-DHAVE_STDINT_H=1', '-DHAVE_INTTYPES_H=1', '../test.cpp', '-c', '-o', '/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/build/.conf_check_e2d723c5c78eeb7c673ead58d5028082/testbuild/test.cpp.1.o']
+err: ../test.cpp:1:10: fatal error: 'sys/inttypes.h' file not found
+#include <sys/inttypes.h>
+         ^
+1 error generated.
+
+from /Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/src/core: Test does not build: Traceback (most recent call last):
+  File "/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/.waf-1.8.12-f00e5b53f6bbeab1384a38c9cc5d51f7/waflib/Configure.py", line 339, in run_build
+    bld.compile()
+  File "/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/.waf-1.8.12-f00e5b53f6bbeab1384a38c9cc5d51f7/waflib/Build.py", line 182, in compile
+    raise Errors.BuildError(self.producer.error)
+BuildError: Build failed
+ -> task in 'testprog' failed (exit status 1): 
+	{task 4317533264: cxx test.cpp -> test.cpp.1.o}
+['/usr/bin/clang++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '-DHAVE_STDINT_H=1', '-DHAVE_INTTYPES_H=1', '../test.cpp', '-c', '-o', '/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/build/.conf_check_e2d723c5c78eeb7c673ead58d5028082/testbuild/test.cpp.1.o']
+
+not found
+from /Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/src/core: The configuration failed
+------------------------------------------------------------------
+Checking for header sys/types.h
+==>
+#include <sys/types.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_ba63fe7e4843c7b01e07deb58c22e327/test.cpp[0m
+
+['/usr/bin/clang++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '-DHAVE_STDINT_H=1', '-DHAVE_INTTYPES_H=1', '../test.cpp', '-c', '-o', '/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/build/.conf_check_ba63fe7e4843c7b01e07deb58c22e327/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_ba63fe7e4843c7b01e07deb58c22e327/testbuild/testprog[0m
+
+['/usr/bin/clang++', 'test.cpp.1.o', '-o', '/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/build/.conf_check_ba63fe7e4843c7b01e07deb58c22e327/testbuild/testprog']
+yes
+------------------------------------------------------------------
+Checking for header sys/stat.h
+==>
+#include <sys/stat.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_52333456596919e551f61f73df296a21/test.cpp[0m
+
+['/usr/bin/clang++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '-DHAVE_STDINT_H=1', '-DHAVE_INTTYPES_H=1', '-DHAVE_SYS_TYPES_H=1', '../test.cpp', '-c', '-o', '/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/build/.conf_check_52333456596919e551f61f73df296a21/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_52333456596919e551f61f73df296a21/testbuild/testprog[0m
+
+['/usr/bin/clang++', 'test.cpp.1.o', '-o', '/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/build/.conf_check_52333456596919e551f61f73df296a21/testbuild/testprog']
+yes
+------------------------------------------------------------------
+Checking for header dirent.h
+==>
+#include <dirent.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_35e5ba86d0d6e9a6591b6def9e293f3c/test.cpp[0m
+
+['/usr/bin/clang++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '-DHAVE_STDINT_H=1', '-DHAVE_INTTYPES_H=1', '-DHAVE_SYS_TYPES_H=1', '-DHAVE_SYS_STAT_H=1', '../test.cpp', '-c', '-o', '/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/build/.conf_check_35e5ba86d0d6e9a6591b6def9e293f3c/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_35e5ba86d0d6e9a6591b6def9e293f3c/testbuild/testprog[0m
+
+['/usr/bin/clang++', 'test.cpp.1.o', '-o', '/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/build/.conf_check_35e5ba86d0d6e9a6591b6def9e293f3c/testbuild/testprog']
+yes
+------------------------------------------------------------------
+Checking for header stdlib.h
+==>
+#include <stdlib.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_ce2644ebb799e91bf2aac5634cbd5acb/test.cpp[0m
+
+['/usr/bin/clang++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '-DHAVE_STDINT_H=1', '-DHAVE_INTTYPES_H=1', '-DHAVE_SYS_TYPES_H=1', '-DHAVE_SYS_STAT_H=1', '-DHAVE_DIRENT_H=1', '../test.cpp', '-c', '-o', '/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/build/.conf_check_ce2644ebb799e91bf2aac5634cbd5acb/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_ce2644ebb799e91bf2aac5634cbd5acb/testbuild/testprog[0m
+
+['/usr/bin/clang++', 'test.cpp.1.o', '-o', '/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/build/.conf_check_ce2644ebb799e91bf2aac5634cbd5acb/testbuild/testprog']
+yes
+------------------------------------------------------------------
+Checking for header signal.h
+==>
+#include <signal.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_d8d188e8afeef16b6306662c21fced03/test.cpp[0m
+
+['/usr/bin/clang++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '-DHAVE_STDINT_H=1', '-DHAVE_INTTYPES_H=1', '-DHAVE_SYS_TYPES_H=1', '-DHAVE_SYS_STAT_H=1', '-DHAVE_DIRENT_H=1', '-DHAVE_STDLIB_H=1', '-DHAVE_GETENV=1', '../test.cpp', '-c', '-o', '/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/build/.conf_check_d8d188e8afeef16b6306662c21fced03/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_d8d188e8afeef16b6306662c21fced03/testbuild/testprog[0m
+
+['/usr/bin/clang++', 'test.cpp.1.o', '-o', '/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/build/.conf_check_d8d188e8afeef16b6306662c21fced03/testbuild/testprog']
+yes
+------------------------------------------------------------------
+Checking for header pthread.h
+==>
+
+#include <pthread.h>
+int main ()
+{
+   pthread_mutex_t m;
+   pthread_mutex_init (&m, NULL);
+   return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_c4a7cd9ada879286c3a10c844be9c2a0/test.cpp[0m
+
+['/usr/bin/clang++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '-DHAVE_STDINT_H=1', '-DHAVE_INTTYPES_H=1', '-DHAVE_SYS_TYPES_H=1', '-DHAVE_SYS_STAT_H=1', '-DHAVE_DIRENT_H=1', '-DHAVE_STDLIB_H=1', '-DHAVE_GETENV=1', '-DHAVE_SIGNAL_H=1', '../test.cpp', '-c', '-o', '/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/build/.conf_check_c4a7cd9ada879286c3a10c844be9c2a0/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_c4a7cd9ada879286c3a10c844be9c2a0/testbuild/testprog[0m
+
+['/usr/bin/clang++', 'test.cpp.1.o', '-o', '/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/build/.conf_check_c4a7cd9ada879286c3a10c844be9c2a0/testbuild/testprog']
+yes
+------------------------------------------------------------------
+Checking for header stdint.h
+==>
+#include <stdint.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_576647804f21dc2a2e48de1a6d4f2a2d/test.cpp[0m
+
+['/usr/bin/clang++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '-DHAVE_INTTYPES_H=1', '-DHAVE_SYS_TYPES_H=1', '-DHAVE_SYS_STAT_H=1', '-DHAVE_DIRENT_H=1', '-DHAVE_STDLIB_H=1', '-DHAVE_GETENV=1', '-DHAVE_SIGNAL_H=1', '-DHAVE_PTHREAD_H=1', '../test.cpp', '-c', '-o', '/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/build/.conf_check_576647804f21dc2a2e48de1a6d4f2a2d/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_576647804f21dc2a2e48de1a6d4f2a2d/testbuild/testprog[0m
+
+['/usr/bin/clang++', 'test.cpp.1.o', '-o', '/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/build/.conf_check_576647804f21dc2a2e48de1a6d4f2a2d/testbuild/testprog']
+yes
+------------------------------------------------------------------
+Checking for header inttypes.h
+==>
+#include <inttypes.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_ce20f8212f41576a8b374d78ffff50b6/test.cpp[0m
+
+['/usr/bin/clang++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '-DHAVE_SYS_TYPES_H=1', '-DHAVE_SYS_STAT_H=1', '-DHAVE_DIRENT_H=1', '-DHAVE_STDLIB_H=1', '-DHAVE_GETENV=1', '-DHAVE_SIGNAL_H=1', '-DHAVE_PTHREAD_H=1', '-DHAVE_STDINT_H=1', '../test.cpp', '-c', '-o', '/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/build/.conf_check_ce20f8212f41576a8b374d78ffff50b6/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_ce20f8212f41576a8b374d78ffff50b6/testbuild/testprog[0m
+
+['/usr/bin/clang++', 'test.cpp.1.o', '-o', '/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/build/.conf_check_ce20f8212f41576a8b374d78ffff50b6/testbuild/testprog']
+yes
+------------------------------------------------------------------
+Checking for header sys/inttypes.h
+==>
+#include <sys/inttypes.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_e2d723c5c78eeb7c673ead58d5028082/test.cpp[0m
+
+['/usr/bin/clang++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '-DHAVE_SYS_TYPES_H=1', '-DHAVE_SYS_STAT_H=1', '-DHAVE_DIRENT_H=1', '-DHAVE_STDLIB_H=1', '-DHAVE_GETENV=1', '-DHAVE_SIGNAL_H=1', '-DHAVE_PTHREAD_H=1', '-DHAVE_STDINT_H=1', '-DHAVE_INTTYPES_H=1', '../test.cpp', '-c', '-o', '/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/build/.conf_check_e2d723c5c78eeb7c673ead58d5028082/testbuild/test.cpp.1.o']
+err: ../test.cpp:1:10: fatal error: 'sys/inttypes.h' file not found
+#include <sys/inttypes.h>
+         ^
+1 error generated.
+
+from /Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/src/core: Test does not build: Traceback (most recent call last):
+  File "/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/.waf-1.8.12-f00e5b53f6bbeab1384a38c9cc5d51f7/waflib/Configure.py", line 339, in run_build
+    bld.compile()
+  File "/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/.waf-1.8.12-f00e5b53f6bbeab1384a38c9cc5d51f7/waflib/Build.py", line 182, in compile
+    raise Errors.BuildError(self.producer.error)
+BuildError: Build failed
+ -> task in 'testprog' failed (exit status 1): 
+	{task 4317221072: cxx test.cpp -> test.cpp.1.o}
+['/usr/bin/clang++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '-DHAVE_SYS_TYPES_H=1', '-DHAVE_SYS_STAT_H=1', '-DHAVE_DIRENT_H=1', '-DHAVE_STDLIB_H=1', '-DHAVE_GETENV=1', '-DHAVE_SIGNAL_H=1', '-DHAVE_PTHREAD_H=1', '-DHAVE_STDINT_H=1', '-DHAVE_INTTYPES_H=1', '../test.cpp', '-c', '-o', '/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/build/.conf_check_e2d723c5c78eeb7c673ead58d5028082/testbuild/test.cpp.1.o']
+
+not found
+from /Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/src/core: The configuration failed
+------------------------------------------------------------------
+Checking for library rt
+==>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_82eb7e930a3f468d99c5bb9ca3f4b36b/test.cpp[0m
+
+['/usr/bin/clang++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '-DHAVE_SYS_TYPES_H=1', '-DHAVE_SYS_STAT_H=1', '-DHAVE_DIRENT_H=1', '-DHAVE_STDLIB_H=1', '-DHAVE_GETENV=1', '-DHAVE_SIGNAL_H=1', '-DHAVE_PTHREAD_H=1', '-DHAVE_STDINT_H=1', '-DHAVE_INTTYPES_H=1', '../test.cpp', '-c', '-o', '/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/build/.conf_check_82eb7e930a3f468d99c5bb9ca3f4b36b/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_82eb7e930a3f468d99c5bb9ca3f4b36b/testbuild/testprog[0m
+
+['/usr/bin/clang++', 'test.cpp.1.o', '-o', '/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/build/.conf_check_82eb7e930a3f468d99c5bb9ca3f4b36b/testbuild/testprog', '-lrt']
+err: ld: library not found for -lrt
+clang: error: linker command failed with exit code 1 (use -v to see invocation)
+
+from /Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/src/core: Test does not build: Traceback (most recent call last):
+  File "/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/.waf-1.8.12-f00e5b53f6bbeab1384a38c9cc5d51f7/waflib/Configure.py", line 339, in run_build
+    bld.compile()
+  File "/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/.waf-1.8.12-f00e5b53f6bbeab1384a38c9cc5d51f7/waflib/Build.py", line 182, in compile
+    raise Errors.BuildError(self.producer.error)
+BuildError: Build failed
+ -> task in 'testprog' failed (exit status 1): 
+	{task 4317221520: cxxprogram test.cpp.1.o -> testprog}
+['/usr/bin/clang++', 'test.cpp.1.o', '-o', '/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/build/.conf_check_82eb7e930a3f468d99c5bb9ca3f4b36b/testbuild/testprog', '-lrt']
+
+not found
+from /Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/src/core: The configuration failed
+------------------------------------------------------------------
+Checking for header sys/ioctl.h
+==>
+#include <sys/ioctl.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_57f7e8493a8d2d4a8d0faa6428eb8611/test.cpp[0m
+
+['/usr/bin/clang++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '../test.cpp', '-c', '-o', '/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/build/.conf_check_57f7e8493a8d2d4a8d0faa6428eb8611/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_57f7e8493a8d2d4a8d0faa6428eb8611/testbuild/testprog[0m
+
+['/usr/bin/clang++', 'test.cpp.1.o', '-o', '/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/build/.conf_check_57f7e8493a8d2d4a8d0faa6428eb8611/testbuild/testprog']
+yes
+------------------------------------------------------------------
+Checking for header net/if.h
+==>
+#include <net/if.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_aff6b7949682fd87592ed93b893e0da0/test.cpp[0m
+
+['/usr/bin/clang++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE_SYS_IOCTL_H=1', '../test.cpp', '-c', '-o', '/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/build/.conf_check_aff6b7949682fd87592ed93b893e0da0/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_aff6b7949682fd87592ed93b893e0da0/testbuild/testprog[0m
+
+['/usr/bin/clang++', 'test.cpp.1.o', '-o', '/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/build/.conf_check_aff6b7949682fd87592ed93b893e0da0/testbuild/testprog']
+yes
+------------------------------------------------------------------
+Checking for header net/ethernet.h
+==>
+#include <net/ethernet.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_2cb25c1b112a163341a5d8a63a6ac421/test.cpp[0m
+
+['/usr/bin/clang++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE_SYS_IOCTL_H=1', '-DHAVE_IF_NETS_H=1', '../test.cpp', '-c', '-o', '/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/build/.conf_check_2cb25c1b112a163341a5d8a63a6ac421/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_2cb25c1b112a163341a5d8a63a6ac421/testbuild/testprog[0m
+
+['/usr/bin/clang++', 'test.cpp.1.o', '-o', '/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/build/.conf_check_2cb25c1b112a163341a5d8a63a6ac421/testbuild/testprog']
+yes
+------------------------------------------------------------------
+Checking for header linux/if_tun.h
+==>
+#include <linux/if_tun.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_cb87d0a9a34c3e244acf5df208fbef80/test.cpp[0m
+
+['/usr/bin/clang++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE_SYS_IOCTL_H=1', '-DHAVE_IF_NETS_H=1', '-DHAVE_NET_ETHERNET_H=1', '../test.cpp', '-c', '-o', '/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/build/.conf_check_cb87d0a9a34c3e244acf5df208fbef80/testbuild/test.cpp.1.o']
+err: ../test.cpp:1:10: fatal error: 'linux/if_tun.h' file not found
+#include <linux/if_tun.h>
+         ^
+1 error generated.
+
+from /Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/src/fd-net-device: Test does not build: Traceback (most recent call last):
+  File "/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/.waf-1.8.12-f00e5b53f6bbeab1384a38c9cc5d51f7/waflib/Configure.py", line 339, in run_build
+    bld.compile()
+  File "/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/.waf-1.8.12-f00e5b53f6bbeab1384a38c9cc5d51f7/waflib/Build.py", line 182, in compile
+    raise Errors.BuildError(self.producer.error)
+BuildError: Build failed
+ -> task in 'testprog' failed (exit status 1): 
+	{task 4317052560: cxx test.cpp -> test.cpp.1.o}
+['/usr/bin/clang++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE_SYS_IOCTL_H=1', '-DHAVE_IF_NETS_H=1', '-DHAVE_NET_ETHERNET_H=1', '../test.cpp', '-c', '-o', '/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/build/.conf_check_cb87d0a9a34c3e244acf5df208fbef80/testbuild/test.cpp.1.o']
+
+not found
+from /Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/src/fd-net-device: The configuration failed
+------------------------------------------------------------------
+Checking for header netpacket/packet.h
+==>
+#include <netpacket/packet.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_c3711ff8954cb017b01068e03b4ed32c/test.cpp[0m
+
+['/usr/bin/clang++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE_SYS_IOCTL_H=1', '-DHAVE_IF_NETS_H=1', '-DHAVE_NET_ETHERNET_H=1', '../test.cpp', '-c', '-o', '/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/build/.conf_check_c3711ff8954cb017b01068e03b4ed32c/testbuild/test.cpp.1.o']
+err: ../test.cpp:1:10: fatal error: 'netpacket/packet.h' file not found
+#include <netpacket/packet.h>
+         ^
+1 error generated.
+
+from /Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/src/fd-net-device: Test does not build: Traceback (most recent call last):
+  File "/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/.waf-1.8.12-f00e5b53f6bbeab1384a38c9cc5d51f7/waflib/Configure.py", line 339, in run_build
+    bld.compile()
+  File "/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/.waf-1.8.12-f00e5b53f6bbeab1384a38c9cc5d51f7/waflib/Build.py", line 182, in compile
+    raise Errors.BuildError(self.producer.error)
+BuildError: Build failed
+ -> task in 'testprog' failed (exit status 1): 
+	{task 4317161744: cxx test.cpp -> test.cpp.1.o}
+['/usr/bin/clang++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE_SYS_IOCTL_H=1', '-DHAVE_IF_NETS_H=1', '-DHAVE_NET_ETHERNET_H=1', '../test.cpp', '-c', '-o', '/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/build/.conf_check_c3711ff8954cb017b01068e03b4ed32c/testbuild/test.cpp.1.o']
+
+not found
+from /Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/src/fd-net-device: The configuration failed
+------------------------------------------------------------------
+Checking for NSC location
+not found
+------------------------------------------------------------------
+Checking for 'sqlite3'
+['/usr/local/bin/pkg-config', '--cflags', '--libs', 'sqlite3']
+out: -lsqlite3 
+
+yes
+------------------------------------------------------------------
+Checking for header linux/if_tun.h
+==>
+#include <linux/if_tun.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_cb87d0a9a34c3e244acf5df208fbef80/test.cpp[0m
+
+['/usr/bin/clang++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE_SYS_IOCTL_H=1', '-DHAVE_IF_NETS_H=1', '-DHAVE_NET_ETHERNET_H=1', '../test.cpp', '-c', '-o', '/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/build/.conf_check_cb87d0a9a34c3e244acf5df208fbef80/testbuild/test.cpp.1.o']
+err: ../test.cpp:1:10: fatal error: 'linux/if_tun.h' file not found
+#include <linux/if_tun.h>
+         ^
+1 error generated.
+
+from /Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/src/tap-bridge: Test does not build: Traceback (most recent call last):
+  File "/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/.waf-1.8.12-f00e5b53f6bbeab1384a38c9cc5d51f7/waflib/Configure.py", line 339, in run_build
+    bld.compile()
+  File "/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/.waf-1.8.12-f00e5b53f6bbeab1384a38c9cc5d51f7/waflib/Build.py", line 182, in compile
+    raise Errors.BuildError(self.producer.error)
+BuildError: Build failed
+ -> task in 'testprog' failed (exit status 1): 
+	{task 4317163088: cxx test.cpp -> test.cpp.1.o}
+['/usr/bin/clang++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE_SYS_IOCTL_H=1', '-DHAVE_IF_NETS_H=1', '-DHAVE_NET_ETHERNET_H=1', '../test.cpp', '-c', '-o', '/Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/build/.conf_check_cb87d0a9a34c3e244acf5df208fbef80/testbuild/test.cpp.1.o']
+
+not found
+from /Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/src/tap-bridge: The configuration failed
+------------------------------------------------------------------
+Checking for python module 'gtk'
+['/usr/bin/python', '-c', "\nimport gtk as current_module\nversion = getattr(current_module, '__version__', None)\nif version is not None:\n\tprint(str(version))\nelse:\n\tprint('unknown version')\n"]
+err: Traceback (most recent call last):
+  File "<string>", line 2, in <module>
+ImportError: No module named gtk
+
+not found
+from /Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/src/visualizer: Could not find the python module 'gtk'
+------------------------------------------------------------------
+Checking for python module 'goocanvas'
+['/usr/bin/python', '-c', "\nimport goocanvas as current_module\nversion = getattr(current_module, '__version__', None)\nif version is not None:\n\tprint(str(version))\nelse:\n\tprint('unknown version')\n"]
+err: Traceback (most recent call last):
+  File "<string>", line 2, in <module>
+ImportError: No module named goocanvas
+
+not found
+from /Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/src/visualizer: Could not find the python module 'goocanvas'
+------------------------------------------------------------------
+Checking for python module 'pygraphviz'
+['/usr/bin/python', '-c', "\nimport pygraphviz as current_module\nversion = getattr(current_module, '__version__', None)\nif version is not None:\n\tprint(str(version))\nelse:\n\tprint('unknown version')\n"]
+err: Traceback (most recent call last):
+  File "<string>", line 2, in <module>
+ImportError: No module named pygraphviz
+
+not found
+from /Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24/src/visualizer: Could not find the python module 'pygraphviz'
+------------------------------------------------------------------
+Checking for program 'sudo'
+/usr/bin/sudo
+find program=['sudo'] paths=['/Users/joshpfosi/Qt/5.4/clang_64/bin', '/opt/local/bin', '/opt/local/sbin', '/Users/joshpfosi/bin/Sencha/Cmd/5.1.3.61', '/Users/joshpfosi/.rvm/gems/ruby-1.9.3-p547/bin', '/Users/joshpfosi/.rvm/gems/ruby-1.9.3-p547@global/bin', '/Users/joshpfosi/.rvm/rubies/ruby-1.9.3-p547/bin', '/Users/joshpfosi/bin/Sencha/Cmd/5.1.3.61', '/usr/local/bin', '/usr/bin', '/bin', '/usr/sbin', '/sbin', '/opt/X11/bin', '/Library/TeX/texbin', '/Users/joshpfosi/.rvm/bin'] var='SUDO' -> ['/usr/bin/sudo']
+------------------------------------------------------------------
+Checking for program 'valgrind'
+/usr/local/bin/valgrind
+find program=['valgrind'] paths=['/Users/joshpfosi/Qt/5.4/clang_64/bin', '/opt/local/bin', '/opt/local/sbin', '/Users/joshpfosi/bin/Sencha/Cmd/5.1.3.61', '/Users/joshpfosi/.rvm/gems/ruby-1.9.3-p547/bin', '/Users/joshpfosi/.rvm/gems/ruby-1.9.3-p547@global/bin', '/Users/joshpfosi/.rvm/rubies/ruby-1.9.3-p547/bin', '/Users/joshpfosi/bin/Sencha/Cmd/5.1.3.61', '/usr/local/bin', '/usr/bin', '/bin', '/usr/sbin', '/sbin', '/opt/X11/bin', '/Library/TeX/texbin', '/Users/joshpfosi/.rvm/bin'] var='VALGRIND' -> ['/usr/local/bin/valgrind']
+------------------------------------------------------------------
+Checking for 'gsl'
+['/usr/local/bin/pkg-config', '--cflags', '--libs', 'gsl']
+err: Package gsl was not found in the pkg-config search path.
+Perhaps you should add the directory containing `gsl.pc'
+to the PKG_CONFIG_PATH environment variable
+No package 'gsl' found
+
+not found
+from /Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24: The configuration failed
+------------------------------------------------------------------
+Checking for program 'doxygen'
+not found
+find program=['doxygen'] paths=['/Users/joshpfosi/Qt/5.4/clang_64/bin', '/opt/local/bin', '/opt/local/sbin', '/Users/joshpfosi/bin/Sencha/Cmd/5.1.3.61', '/Users/joshpfosi/.rvm/gems/ruby-1.9.3-p547/bin', '/Users/joshpfosi/.rvm/gems/ruby-1.9.3-p547@global/bin', '/Users/joshpfosi/.rvm/rubies/ruby-1.9.3-p547/bin', '/Users/joshpfosi/bin/Sencha/Cmd/5.1.3.61', '/usr/local/bin', '/usr/bin', '/bin', '/usr/sbin', '/sbin', '/opt/X11/bin', '/Library/TeX/texbin', '/Users/joshpfosi/.rvm/bin'] var='DOXYGEN' -> None
+from /Users/joshpfosi/workspace/ns-allinone-3.24/ns-3.24: Could not find the program ['doxygen']
