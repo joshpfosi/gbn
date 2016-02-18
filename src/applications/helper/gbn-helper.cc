@@ -17,18 +17,17 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "udp-echo-helper.h"
-#include "ns3/udp-echo-server.h"
-#include "ns3/udp-echo-client.h"
+#include "gbn-helper.h"
+#include "ns3/gbn-receiver.h"
+#include "ns3/gbn-sender.h"
 #include "ns3/uinteger.h"
 #include "ns3/names.h"
 
 namespace ns3 {
 
-GbnReceiverHelper::GbnReceiverHelper (uint16_t port)
+GbnReceiverHelper::GbnReceiverHelper ()
 {
   m_factory.SetTypeId (GbnReceiver::GetTypeId ());
-  SetAttribute ("Port", UintegerValue (port));
 }
 
 void 
@@ -73,25 +72,10 @@ GbnReceiverHelper::InstallPriv (Ptr<Node> node) const
   return app;
 }
 
-GbnSenderHelper::GbnSenderHelper (Address address, uint16_t port)
+GbnSenderHelper::GbnSenderHelper (Address address)
 {
   m_factory.SetTypeId (GbnSender::GetTypeId ());
-  SetAttribute ("RemoteAddress", AddressValue (address));
-  SetAttribute ("RemotePort", UintegerValue (port));
-}
-
-GbnSenderHelper::GbnSenderHelper (Ipv4Address address, uint16_t port)
-{
-  m_factory.SetTypeId (GbnSender::GetTypeId ());
-  SetAttribute ("RemoteAddress", AddressValue (Address(address)));
-  SetAttribute ("RemotePort", UintegerValue (port));
-}
-
-GbnSenderHelper::GbnSenderHelper (Ipv6Address address, uint16_t port)
-{
-  m_factory.SetTypeId (GbnSender::GetTypeId ());
-  SetAttribute ("RemoteAddress", AddressValue (Address(address)));
-  SetAttribute ("RemotePort", UintegerValue (port));
+  SetAttribute ("MacAddress", AddressValue (address));
 }
 
 void 

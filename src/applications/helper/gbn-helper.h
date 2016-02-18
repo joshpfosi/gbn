@@ -43,7 +43,7 @@ public:
    *
    * \param port The port the server will wait on for incoming packets
    */
-  GbnReceiverHelper (uint16_t port);
+  GbnReceiverHelper (void);
 
   /**
    * Record an attribute to be set in each Application after it is is created.
@@ -113,23 +113,7 @@ public:
    * \param ip The IP address of the remote udp echo server
    * \param port The port number of the remote udp echo server
    */
-  GbnSenderHelper (Address ip, uint16_t port);
-  /**
-   * Create GbnSenderHelper which will make life easier for people trying
-   * to set up simulations with echos.
-   *
-   * \param ip The IPv4 address of the remote udp echo server
-   * \param port The port number of the remote udp echo server
-   */
-  GbnSenderHelper (Ipv4Address ip, uint16_t port);
-  /**
-   * Create GbnSenderHelper which will make life easier for people trying
-   * to set up simulations with echos.
-   *
-   * \param ip The IPv6 address of the remote udp echo server
-   * \param port The port number of the remote udp echo server
-   */
-  GbnSenderHelper (Ipv6Address ip, uint16_t port);
+  GbnSenderHelper (Address mac);
 
   /**
    * Record an attribute to be set in each Application after it is is created.

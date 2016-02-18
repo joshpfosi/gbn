@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef GBN_RECEIVER
-#define GBN_RECEIVER
+#ifndef GBN_RECEIVER_H
+#define GBN_RECEIVER_H
 
 #include "ns3/application.h"
 #include "ns3/event-id.h"
@@ -26,20 +26,8 @@
 
 namespace ns3 {
 
-class Socket;
 class Packet;
 
-/**
- * \ingroup applications 
- * \defgroup udpecho UdpEcho
- */
-
-/**
- * \ingroup udpecho
- * \brief A Udp Echo server
- *
- * Every packet received is sent back.
- */
 class GbnReceiver : public Application 
 {
 public:
@@ -59,22 +47,12 @@ private:
   virtual void StartApplication (void);
   virtual void StopApplication (void);
 
-  /**
-   * \brief Handle a packet reception.
-   *
-   * This function is called by lower layers.
-   *
-   * \param socket the socket the packet was received to.
-   */
-  void HandleRead (Ptr<Socket> socket);
+  void HandleRead (void);
 
-  uint16_t m_port; //!< Port on which we listen for incoming packets.
-  Ptr<Socket> m_socket; //!< IPv4 Socket
-  Ptr<Socket> m_socket6; //!< IPv6 Socket
-  Address m_local; //!< local multicast address
+  Address mac;
 };
 
 } // namespace ns3
 
-#endif /* GBN_RECEIVER */
+#endif /* GBN_RECEIVER_H */
 

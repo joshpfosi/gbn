@@ -27,6 +27,7 @@ def build(bld):
         'helper/ping6-helper.cc',
         'helper/udp-client-server-helper.cc',
         'helper/udp-echo-helper.cc',
+        'helper/gbn-helper.cc',
         'helper/v4ping-helper.cc',
         'helper/radvd-helper.cc',
         ]
@@ -63,6 +64,7 @@ def build(bld):
         'helper/ping6-helper.h',
         'helper/udp-client-server-helper.h',
         'helper/udp-echo-helper.h',
+        'helper/gbn-helper.h',
         'helper/v4ping-helper.h',
         'helper/radvd-helper.h',
         ]
