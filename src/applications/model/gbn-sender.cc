@@ -42,34 +42,11 @@ GbnSender::GetTypeId (void)
     .SetParent<Application> ()
     .SetGroupName("Applications")
     .AddConstructor<GbnSender> ()
-    .AddAttribute ("MaxPackets", 
-                   "The maximum number of packets the application will send",
-                   UintegerValue (100),
-                   MakeUintegerAccessor (&GbnSender::m_count),
-                   MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("Interval", 
-                   "The time to wait between packets",
-                   TimeValue (Seconds (1.0)),
-                   MakeTimeAccessor (&GbnSender::m_interval),
-                   MakeTimeChecker ())
-    .AddAttribute ("RemoteAddress", 
-                   "The destination Address of the outbound packets",
-                   AddressValue (),
-                   MakeAddressAccessor (&GbnSender::m_peerAddress),
-                   MakeAddressChecker ())
-    .AddAttribute ("RemotePort", 
-                   "The destination port of the outbound packets",
-                   UintegerValue (0),
-                   MakeUintegerAccessor (&GbnSender::m_peerPort),
-                   MakeUintegerChecker<uint16_t> ())
-    .AddAttribute ("PacketSize", "Size of echo data in outbound packets",
-                   UintegerValue (100),
-                   MakeUintegerAccessor (&GbnSender::SetDataSize,
-                                         &GbnSender::GetDataSize),
-                   MakeUintegerChecker<uint32_t> ())
-    .AddTraceSource ("Tx", "A new packet is created and is sent",
-                     MakeTraceSourceAccessor (&GbnSender::m_txTrace),
-                     "ns3::Packet::TracedCallback")
+    .AddAttribute ("RcvrMacAddress", 
+                   "MAC address of receiving device",
+                   AddressValue(),
+                   MakeAddressAccessor(&GbnSender::rcvr_addr),
+                   MakeAddressChecker())
   ;
   return tid;
 }

@@ -72,10 +72,10 @@ GbnReceiverHelper::InstallPriv (Ptr<Node> node) const
   return app;
 }
 
-GbnSenderHelper::GbnSenderHelper (Address address)
+GbnSenderHelper::GbnSenderHelper (Address rcvrAddress)
 {
   m_factory.SetTypeId (GbnSender::GetTypeId ());
-  SetAttribute ("MacAddress", AddressValue (address));
+  SetAttribute ("RcvrMacAddress", AddressValue (rcvrAddress));
 }
 
 void 

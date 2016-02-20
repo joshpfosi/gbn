@@ -47,9 +47,8 @@ private:
   virtual void StartApplication (void);
   virtual void StopApplication (void);
 
-  void HandleRead (void);
-
-  Address mac;
+  bool HandleRead (Ptr<NetDevice> dev, Ptr<const Packet> p,
+          uint16_t protocol, const Address &mac);
 };
 
 } // namespace ns3

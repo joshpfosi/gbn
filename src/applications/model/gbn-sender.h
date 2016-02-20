@@ -179,6 +179,8 @@ private:
 
   /// Callbacks for tracing the packet Tx events
   TracedCallback<Ptr<const Packet> > m_txTrace;
+
+  Address rcvr_addr;
 };
 
 } // namespace ns3

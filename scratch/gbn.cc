@@ -44,8 +44,7 @@ main (int argc, char *argv[])
   NetDeviceContainer devices;
   devices = pointToPoint.Install (nodes);
 
-  NetDeviceContainer::Iterator iter = devices.Begin();
-  Ptr<NetDevice> senderDev = *iter, rcvrDev = *(++iter);
+  Ptr<NetDevice> rcvrDev = *(++devices.Begin());
 
   GbnSenderHelper sender (rcvrDev->GetAddress());
   // TODO: parametrize on cmd line
