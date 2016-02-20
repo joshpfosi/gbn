@@ -44,21 +44,21 @@ main (int argc, char *argv[])
   NetDeviceContainer devices;
   devices = pointToPoint.Install (nodes);
 
-  Ptr<NetDevice> rcvrDev = *(++devices.Begin());
+  Ptr<NetDevice> rcvrDev = nodes.Get(1)->GetDevice(0);
+
+  GbnReceiverHelper rcvr;
+
+  ApplicationContainer receiverApps = rcvr.Install (nodes.Get (1));
+  receiverApps.Start (Seconds (1.0));
+  receiverApps.Stop (Seconds (10.0));
 
   GbnSenderHelper sender (rcvrDev->GetAddress());
   // TODO: parametrize on cmd line
   // sender.SetAttribute ("WindowSize", UintegerValue (1));
 
   ApplicationContainer senderApps = sender.Install (nodes.Get (0));
-  senderApps.Start (Seconds (1.0));
+  senderApps.Start (Seconds (2.0));
   senderApps.Stop (Seconds (10.0));
-
-  GbnReceiverHelper rcvr;
-
-  ApplicationContainer receiverApps = rcvr.Install (nodes.Get (1));
-  receiverApps.Start (Seconds (2.0));
-  receiverApps.Stop (Seconds (10.0));
 
   Simulator::Run ();
   Simulator::Destroy ();

@@ -49,6 +49,8 @@ private:
 
   bool HandleRead (Ptr<NetDevice> dev, Ptr<const Packet> p,
           uint16_t protocol, const Address &mac);
+
+  Ptr<NetDevice> m_dev;
 };
 
 } // namespace ns3

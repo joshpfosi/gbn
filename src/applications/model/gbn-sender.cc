@@ -45,8 +45,13 @@ GbnSender::GetTypeId (void)
     .AddAttribute ("RcvrMacAddress", 
                    "MAC address of receiving device",
                    AddressValue(),
-                   MakeAddressAccessor(&GbnSender::rcvr_addr),
+                   MakeAddressAccessor(&GbnSender::m_rcvr_addr),
                    MakeAddressChecker())
+    .AddAttribute ("PacketSize", "Size of data in outbound packets",
+                   UintegerValue (100),
+                   MakeUintegerAccessor (&GbnSender::SetDataSize,
+                                         &GbnSender::GetDataSize),
+                   MakeUintegerChecker<uint32_t> ())
   ;
   return tid;
 }
@@ -54,17 +59,17 @@ GbnSender::GetTypeId (void)
 GbnSender::GbnSender ()
 {
   NS_LOG_FUNCTION (this);
+  m_dev = 0;
   m_sent = 0;
-  m_socket = 0;
   m_sendEvent = EventId ();
   m_data = 0;
   m_dataSize = 0;
+  m_count = 5;
 }
 
 GbnSender::~GbnSender()
 {
   NS_LOG_FUNCTION (this);
-  m_socket = 0;
 
   delete [] m_data;
   m_data = 0;
@@ -72,27 +77,10 @@ GbnSender::~GbnSender()
 }
 
 void 
-GbnSender::SetRemote (Address ip, uint16_t port)
+GbnSender::SetRemote (Address mac)
 {
-  NS_LOG_FUNCTION (this << ip << port);
-  m_peerAddress = ip;
-  m_peerPort = port;
-}
-
-void 
-GbnSender::SetRemote (Ipv4Address ip, uint16_t port)
-{
-  NS_LOG_FUNCTION (this << ip << port);
-  m_peerAddress = Address (ip);
-  m_peerPort = port;
-}
-
-void 
-GbnSender::SetRemote (Ipv6Address ip, uint16_t port)
-{
-  NS_LOG_FUNCTION (this << ip << port);
-  m_peerAddress = Address (ip);
-  m_peerPort = port;
+  NS_LOG_FUNCTION (this << mac);
+  m_rcvr_addr = mac;
 }
 
 void
@@ -107,23 +95,12 @@ GbnSender::StartApplication (void)
 {
   NS_LOG_FUNCTION (this);
 
-  if (m_socket == 0)
+  if (m_dev == 0)
     {
-      TypeId tid = TypeId::LookupByName ("ns3::UdpSocketFactory");
-      m_socket = Socket::CreateSocket (GetNode (), tid);
-      if (Ipv4Address::IsMatchingType(m_peerAddress) == true)
-        {
-          m_socket->Bind();
-          m_socket->Connect (InetSocketAddress (Ipv4Address::ConvertFrom(m_peerAddress), m_peerPort));
-        }
-      else if (Ipv6Address::IsMatchingType(m_peerAddress) == true)
-        {
-          m_socket->Bind6();
-          m_socket->Connect (Inet6SocketAddress (Ipv6Address::ConvertFrom(m_peerAddress), m_peerPort));
-        }
+        m_dev = GetNode()->GetDevice(0);
     }
 
-  m_socket->SetRecvCallback (MakeCallback (&GbnSender::HandleRead, this));
+  m_dev->SetReceiveCallback(MakeCallback(&GbnSender::HandleRead, this));
 
   ScheduleTransmit (Seconds (0.));
 }
@@ -132,13 +109,6 @@ void
 GbnSender::StopApplication ()
 {
   NS_LOG_FUNCTION (this);
-
-  if (m_socket != 0) 
-    {
-      m_socket->Close ();
-      m_socket->SetRecvCallback (MakeNullCallback<void, Ptr<Socket> > ());
-      m_socket = 0;
-    }
 
   Simulator::Cancel (m_sendEvent);
 }
@@ -287,20 +257,10 @@ GbnSender::Send (void)
   // call to the trace sinks before the packet is actually sent,
   // so that tags added to the packet can be sent as well
   m_txTrace (p);
-  m_socket->Send (p);
+  m_dev->Send(p, m_rcvr_addr, 0x0800); // IPv4
+  // disregard return value -- use ACKs to determine success
 
   ++m_sent;
-
-  if (Ipv4Address::IsMatchingType (m_peerAddress))
-    {
-      NS_LOG_INFO ("At time " << Simulator::Now ().GetSeconds () << "s client sent " << m_size << " bytes to " <<
-                   Ipv4Address::ConvertFrom (m_peerAddress) << " port " << m_peerPort);
-    }
-  else if (Ipv6Address::IsMatchingType (m_peerAddress))
-    {
-      NS_LOG_INFO ("At time " << Simulator::Now ().GetSeconds () << "s client sent " << m_size << " bytes to " <<
-                   Ipv6Address::ConvertFrom (m_peerAddress) << " port " << m_peerPort);
-    }
 
   if (m_sent < m_count) 
     {
@@ -308,27 +268,14 @@ GbnSender::Send (void)
     }
 }
 
-void
-GbnSender::HandleRead (Ptr<Socket> socket)
+bool 
+GbnSender::HandleRead (Ptr<NetDevice> dev, Ptr<const Packet> p,
+        uint16_t protocol, const Address &mac)
 {
-  NS_LOG_FUNCTION (this << socket);
-  Ptr<Packet> packet;
-  Address from;
-  while ((packet = socket->RecvFrom (from)))
-    {
-      if (InetSocketAddress::IsMatchingType (from))
-        {
-          NS_LOG_INFO ("At time " << Simulator::Now ().GetSeconds () << "s client received " << packet->GetSize () << " bytes from " <<
-                       InetSocketAddress::ConvertFrom (from).GetIpv4 () << " port " <<
-                       InetSocketAddress::ConvertFrom (from).GetPort ());
-        }
-      else if (Inet6SocketAddress::IsMatchingType (from))
-        {
-          NS_LOG_INFO ("At time " << Simulator::Now ().GetSeconds () << "s client received " << packet->GetSize () << " bytes from " <<
-                       Inet6SocketAddress::ConvertFrom (from).GetIpv6 () << " port " <<
-                       Inet6SocketAddress::ConvertFrom (from).GetPort ());
-        }
-    }
+    NS_LOG_FUNCTION (this << dev << p << protocol << mac);
+    NS_LOG_INFO ("At time " << Simulator::Now ().GetSeconds () <<
+            "s sender received " << p->GetSize () << " bytes mac " << mac);
+    return true;
 }
 
 } // Namespace ns3

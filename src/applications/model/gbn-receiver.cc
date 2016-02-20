@@ -46,7 +46,8 @@ GbnReceiver::GetTypeId (void)
   return tid;
 }
 
-GbnReceiver::GbnReceiver ()
+GbnReceiver::GbnReceiver () :
+    m_dev(0)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -68,7 +69,12 @@ GbnReceiver::StartApplication (void)
 {
   NS_LOG_FUNCTION (this);
 
-  GetNode()->GetDevice(0)->SetReceiveCallback(MakeCallback(&GbnReceiver::HandleRead, this));
+  if (m_dev == 0)
+    {
+        m_dev = GetNode()->GetDevice(0);
+    }
+
+  m_dev->SetReceiveCallback(MakeCallback(&GbnReceiver::HandleRead, this));
 }
 
 void 
@@ -81,45 +87,15 @@ bool
 GbnReceiver::HandleRead (Ptr<NetDevice> dev, Ptr<const Packet> p,
         uint16_t protocol, const Address &mac)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION (this);
 
-  // Ptr<Packet> packet;
-  // Address from;
-  // while ((packet = socket->RecvFrom (from)))
-  //   {
-  //     if (InetSocketAddress::IsMatchingType (from))
-  //       {
-  //         NS_LOG_INFO ("At time " << Simulator::Now ().GetSeconds () << "s server received " << packet->GetSize () << " bytes from " <<
-  //                      InetSocketAddress::ConvertFrom (from).GetIpv4 () << " port " <<
-  //                      InetSocketAddress::ConvertFrom (from).GetPort ());
-  //       }
-  //     else if (Inet6SocketAddress::IsMatchingType (from))
-  //       {
-  //         NS_LOG_INFO ("At time " << Simulator::Now ().GetSeconds () << "s server received " << packet->GetSize () << " bytes from " <<
-  //                      Inet6SocketAddress::ConvertFrom (from).GetIpv6 () << " port " <<
-  //                      Inet6SocketAddress::ConvertFrom (from).GetPort ());
-  //       }
+    NS_LOG_INFO ("At time " << Simulator::Now ().GetSeconds () << "s receiver received " << p->GetSize () << " bytes mac " << mac);
 
-  //     packet->RemoveAllPacketTags ();
-  //     packet->RemoveAllByteTags ();
+    m_dev->Send(Create<Packet>(1024), mac, 0x0800); // IPv4
 
-  //     NS_LOG_LOGIC ("Echoing packet");
-  //     socket->SendTo (packet, 0, from);
+    NS_LOG_INFO ("At time " << Simulator::Now ().GetSeconds () << "s receiver sent " << 1024 << " bytes to " << mac);
 
-  //     if (InetSocketAddress::IsMatchingType (from))
-  //       {
-  //         NS_LOG_INFO ("At time " << Simulator::Now ().GetSeconds () << "s server sent " << packet->GetSize () << " bytes to " <<
-  //                      InetSocketAddress::ConvertFrom (from).GetIpv4 () << " port " <<
-  //                      InetSocketAddress::ConvertFrom (from).GetPort ());
-  //       }
-  //     else if (Inet6SocketAddress::IsMatchingType (from))
-  //       {
-  //         NS_LOG_INFO ("At time " << Simulator::Now ().GetSeconds () << "s server sent " << packet->GetSize () << " bytes to " <<
-  //                      Inet6SocketAddress::ConvertFrom (from).GetIpv6 () << " port " <<
-  //                      Inet6SocketAddress::ConvertFrom (from).GetPort ());
-  //       }
-  //   }
-  return false;
+    return true;
 }
 
 } // Namespace ns3

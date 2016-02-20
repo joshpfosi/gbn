@@ -49,24 +49,7 @@ public:
 
   virtual ~GbnSender ();
 
-  /**
-   * \brief set the remote address and port
-   * \param ip remote IPv4 address
-   * \param port remote port
-   */
-  void SetRemote (Ipv4Address ip, uint16_t port);
-  /**
-   * \brief set the remote address and port
-   * \param ip remote IPv6 address
-   * \param port remote port
-   */
-  void SetRemote (Ipv6Address ip, uint16_t port);
-  /**
-   * \brief set the remote address and port
-   * \param ip remote IP address
-   * \param port remote port
-   */
-  void SetRemote (Address ip, uint16_t port);
+  void SetRemote (Address mac);
 
   /**
    * Set the data size of the packet (the number of bytes that are sent as data
@@ -155,14 +138,8 @@ private:
    */
   void Send (void);
 
-  /**
-   * \brief Handle a packet reception.
-   *
-   * This function is called by lower layers.
-   *
-   * \param socket the socket the packet was received to.
-   */
-  void HandleRead (Ptr<Socket> socket);
+  bool HandleRead (Ptr<NetDevice> dev, Ptr<const Packet> p,
+          uint16_t protocol, const Address &mac);
 
   uint32_t m_count; //!< Maximum number of packets the application will send
   Time m_interval; //!< Packet inter-send time
@@ -172,15 +149,13 @@ private:
   uint8_t *m_data; //!< packet payload data
 
   uint32_t m_sent; //!< Counter for sent packets
-  Ptr<Socket> m_socket; //!< Socket
-  Address m_peerAddress; //!< Remote peer address
-  uint16_t m_peerPort; //!< Remote peer port
   EventId m_sendEvent; //!< Event to send the next packet
 
   /// Callbacks for tracing the packet Tx events
   TracedCallback<Ptr<const Packet> > m_txTrace;
 
-  Address rcvr_addr;
+  Address m_rcvr_addr;
+  Ptr<NetDevice> m_dev;
 };
 
 } // namespace ns3
