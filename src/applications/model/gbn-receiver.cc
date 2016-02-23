@@ -17,8 +17,7 @@
  */
 
 #include "ns3/log.h"
-#include "ns3/ipv4-address.h"
-#include "ns3/ipv6-address.h"
+#include "ns3/mac48-address.h"
 #include "ns3/address-utils.h"
 #include "ns3/nstime.h"
 #include "ns3/inet-socket-address.h"
@@ -91,10 +90,12 @@ GbnReceiver::HandleRead (Ptr<NetDevice> dev, Ptr<const Packet> p,
 
     NS_LOG_INFO ("At time " << Simulator::Now ().GetSeconds () << "s receiver received " << p->GetSize () << " bytes mac " << mac);
 
-    m_dev->Send(Create<Packet>(1024), mac, 0x0800); // IPv4
+    static uint16_t seq_no = 0;
+    m_dev->Send(Create<Packet>((uint8_t*)&seq_no, sizeof(seq_no)), mac, 0x0800); // IPv4
 
-    NS_LOG_INFO ("At time " << Simulator::Now ().GetSeconds () << "s receiver sent " << 1024 << " bytes to " << mac);
+    NS_LOG_INFO ("At time " << Simulator::Now ().GetSeconds () << "s receiver sent ACK " << seq_no << " " << p->GetSize() << " bytes to " << mac);
 
+    ++seq_no;
     return true;
 }
 

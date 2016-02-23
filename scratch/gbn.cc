@@ -40,20 +40,22 @@ main (int argc, char *argv[])
   simpleNetDevice.SetDeviceAttribute("DataRate", StringValue ("5Mbps"));
   // TODO: parametrize on cmd line
   simpleNetDevice.SetChannelAttribute("Delay", StringValue ("2ms"));
-  // TODO: Set error model here
+  // TODO: Set error model
+  // Ptr<ErrorModel> rem = CreateObject<RateErrorModel>();
+  // rem->SetRate(0.001);
+  // simpleNetDevice.SetChannelAttribute("ReceiveErrorModel", rem);
   simpleNetDevice.SetNetDevicePointToPointMode(true);
+  simpleNetDevice.Install(nodes);
 
-  NetDeviceContainer devices = simpleNetDevice.Install(nodes);
-
-  Ptr<NetDevice> rcvrDev = nodes.Get(1)->GetDevice(0);
+  Address rcvrAddr = nodes.Get(1)->GetDevice(0)->GetAddress(); // Mac48Address
 
   GbnReceiverHelper rcvr;
 
   ApplicationContainer receiverApps = rcvr.Install (nodes.Get (1));
-  receiverApps.Start (Seconds (1.0));
-  receiverApps.Stop (Seconds (2.5));
+  receiverApps.Start(Seconds (1.0));
+  receiverApps.Stop(Seconds (2.5));
 
-  GbnSenderHelper sender (rcvrDev->GetAddress());
+  GbnSenderHelper sender(rcvrAddr);
   // TODO: parametrize on cmd line
   // sender.SetAttribute ("WindowSize", UintegerValue (1));
 

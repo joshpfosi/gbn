@@ -16,8 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #include "ns3/log.h"
-#include "ns3/ipv4-address.h"
-#include "ns3/ipv6-address.h"
+#include "ns3/mac48-address.h"
 #include "ns3/nstime.h"
 #include "ns3/inet-socket-address.h"
 #include "ns3/inet6-socket-address.h"
@@ -42,7 +41,7 @@ GbnSender::GetTypeId (void)
     .SetParent<Application> ()
     .SetGroupName("Applications")
     .AddConstructor<GbnSender> ()
-    .AddAttribute ("RcvrMacAddress", 
+    .AddAttribute ("RcvrAddress", 
                    "MAC address of receiving device",
                    AddressValue(),
                    MakeAddressAccessor(&GbnSender::m_rcvr_addr),
@@ -272,8 +271,12 @@ GbnSender::HandleRead (Ptr<NetDevice> dev, Ptr<const Packet> p,
         uint16_t protocol, const Address &mac)
 {
     NS_LOG_FUNCTION (this << dev << p << protocol << mac);
+
+    uint16_t ack_no;
+    p->CopyData((uint8_t *)&ack_no, sizeof(ack_no));
+
     NS_LOG_INFO ("At time " << Simulator::Now ().GetSeconds () <<
-            "s sender received " << p->GetSize () << " bytes mac " << mac);
+            "s sender received " << ack_no << " " << p->GetSize () << " bytes mac " << mac);
     return true;
 }
 
