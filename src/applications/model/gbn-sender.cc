@@ -64,7 +64,7 @@ GbnSender::GbnSender ()
   m_sendEvent = EventId ();
   m_data = 0;
   m_dataSize = 0;
-  m_count = 5;
+  m_interval = Seconds(0.001);
 }
 
 GbnSender::~GbnSender()
@@ -257,15 +257,14 @@ GbnSender::Send (void)
   // call to the trace sinks before the packet is actually sent,
   // so that tags added to the packet can be sent as well
   m_txTrace (p);
+  NS_LOG_INFO ("At time " << Simulator::Now ().GetSeconds () <<
+          "s sender sent " << p->GetSize () << " bytes mac " << m_rcvr_addr);
   m_dev->Send(p, m_rcvr_addr, 0x0800); // IPv4
   // disregard return value -- use ACKs to determine success
 
   ++m_sent;
 
-  if (m_sent < m_count) 
-    {
-      ScheduleTransmit (m_interval);
-    }
+  ScheduleTransmit (m_interval);
 }
 
 bool 

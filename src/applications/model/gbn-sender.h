@@ -141,7 +141,6 @@ private:
   bool HandleRead (Ptr<NetDevice> dev, Ptr<const Packet> p,
           uint16_t protocol, const Address &mac);
 
-  uint32_t m_count; //!< Maximum number of packets the application will send
   Time m_interval; //!< Packet inter-send time
   uint32_t m_size; //!< Size of the sent packet
 

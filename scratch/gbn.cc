@@ -50,7 +50,7 @@ main (int argc, char *argv[])
 
   ApplicationContainer receiverApps = rcvr.Install (nodes.Get (1));
   receiverApps.Start (Seconds (1.0));
-  receiverApps.Stop (Seconds (10.0));
+  receiverApps.Stop (Seconds (2.5));
 
   GbnSenderHelper sender (rcvrDev->GetAddress());
   // TODO: parametrize on cmd line
@@ -58,7 +58,7 @@ main (int argc, char *argv[])
 
   ApplicationContainer senderApps = sender.Install (nodes.Get (0));
   senderApps.Start (Seconds (2.0));
-  senderApps.Stop (Seconds (10.0));
+  senderApps.Stop (Seconds (2.5));
 
   Simulator::Run ();
   Simulator::Destroy ();
