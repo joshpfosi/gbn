@@ -17,7 +17,7 @@
 #include "ns3/core-module.h"
 #include "ns3/network-module.h"
 #include "ns3/internet-module.h"
-#include "ns3/point-to-point-module.h"
+#include "ns3/simple-net-device-helper.h"
 #include "ns3/applications-module.h"
 
 using namespace ns3;
@@ -29,20 +29,21 @@ main (int argc, char *argv[])
 {
   // TODO: Add CommandLine parser
   Time::SetResolution (Time::NS);
-  LogComponentEnable ("GbnSenderApplication", LOG_LEVEL_INFO);
-  LogComponentEnable ("GbnReceiverApplication", LOG_LEVEL_INFO);
+  LogComponentEnable("GbnSenderApplication", LOG_LEVEL_INFO);
+  LogComponentEnable("GbnReceiverApplication", LOG_LEVEL_INFO);
 
   NodeContainer nodes;
-  nodes.Create (2);
+  nodes.Create(2);
 
-  PointToPointHelper pointToPoint;
+  SimpleNetDeviceHelper simpleNetDevice;
   // TODO: parametrize on cmd line
-  pointToPoint.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
+  simpleNetDevice.SetDeviceAttribute("DataRate", StringValue ("5Mbps"));
   // TODO: parametrize on cmd line
-  pointToPoint.SetChannelAttribute ("Delay", StringValue ("2ms"));
+  simpleNetDevice.SetChannelAttribute("Delay", StringValue ("2ms"));
+  // TODO: Set error model here
+  simpleNetDevice.SetNetDevicePointToPointMode(true);
 
-  NetDeviceContainer devices;
-  devices = pointToPoint.Install (nodes);
+  NetDeviceContainer devices = simpleNetDevice.Install(nodes);
 
   Ptr<NetDevice> rcvrDev = nodes.Get(1)->GetDevice(0);
 
