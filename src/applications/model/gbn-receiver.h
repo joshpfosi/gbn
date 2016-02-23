@@ -52,6 +52,9 @@ private:
           uint16_t protocol, const Address &mac);
 
   Ptr<NetDevice> m_dev;
+
+  uint8_t m_bytes_rx;
+  double m_last_rx;
 };
 
 } // namespace ns3

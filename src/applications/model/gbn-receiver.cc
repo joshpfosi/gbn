@@ -46,7 +46,9 @@ GbnReceiver::GetTypeId (void)
 }
 
 GbnReceiver::GbnReceiver () :
-    m_dev(0)
+    m_dev(0),
+    m_bytes_rx(0),
+    m_last_rx(0)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -79,7 +81,9 @@ GbnReceiver::StartApplication (void)
 void 
 GbnReceiver::StopApplication (void)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION (this);
+    NS_LOG_INFO("THROUGHPUT "
+            << ((m_last_rx) ? m_bytes_rx / m_last_rx : 0) << " bps");
 }
 
 bool 
@@ -96,6 +100,10 @@ GbnReceiver::HandleRead (Ptr<NetDevice> dev, Ptr<const Packet> p,
     NS_LOG_INFO ("At time " << Simulator::Now ().GetSeconds () << "s receiver sent ACK " << seq_no << " " << p->GetSize() << " bytes to " << mac);
 
     ++seq_no;
+
+    m_last_rx = Simulator::Now().GetSeconds() - 2;
+    m_bytes_rx += p->GetSize() * 8;
+
     return true;
 }
 
