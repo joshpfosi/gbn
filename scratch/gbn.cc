@@ -35,19 +35,25 @@ main (int argc, char *argv[])
   NodeContainer nodes;
   nodes.Create(2);
 
-  SimpleNetDeviceHelper simpleNetDevice;
-  // TODO: parametrize on cmd line
-  simpleNetDevice.SetDeviceAttribute("DataRate", StringValue ("5Mbps"));
-  // TODO: parametrize on cmd line
-  simpleNetDevice.SetChannelAttribute("Delay", StringValue ("2ms"));
+  std::string rate = "5Mbps", delay = "2ms";
+  double errorRate = 0.0;
 
-  // TODO: parametrize on cmd line
+  CommandLine cmd;
+  cmd.AddValue("Rate", "Data rate of devices", rate);
+  cmd.AddValue("Delay", "Delay of channel", delay);
+  cmd.AddValue("ErrorRate", "Receive error rate", errorRate);
+  cmd.Parse(argc, argv);
+
+  SimpleNetDeviceHelper simpleNetDevice;
+  simpleNetDevice.SetDeviceAttribute("DataRate", StringValue (rate));
+  simpleNetDevice.SetChannelAttribute("Delay", StringValue (delay));
+  simpleNetDevice.SetNetDevicePointToPointMode(true);
+
   Ptr<RateErrorModel> rem = CreateObject<RateErrorModel>();
   rem->SetUnit(ns3::RateErrorModel::ERROR_UNIT_PACKET);
-  rem->SetRate(0.9);
+  rem->SetRate(errorRate);
 
   simpleNetDevice.SetDeviceAttribute("ReceiveErrorModel", PointerValue(rem));
-  simpleNetDevice.SetNetDevicePointToPointMode(true);
 
   simpleNetDevice.Install(nodes);
 
