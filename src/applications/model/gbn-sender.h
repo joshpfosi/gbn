@@ -62,7 +62,7 @@ public:
    *
    * \param dataSize The size of the echo data you want to sent.
    */
-  void SetDataSize (uint32_t dataSize);
+  // void SetDataSize (uint32_t dataSize);
 
   /**
    * Get the number of data bytes that will be sent to the server.
@@ -75,7 +75,7 @@ public:
    *
    * \returns The number of data bytes.
    */
-  uint32_t GetDataSize (void) const;
+  // uint32_t GetDataSize (void) const;
 
   /**
    * Set the data fill of the packet (what is sent as data to the server) to 
@@ -87,7 +87,7 @@ public:
    *
    * \param fill The string to use as the actual echo data bytes.
    */
-  void SetFill (std::string fill);
+  // void SetFill (std::string fill);
 
   /**
    * Set the data fill of the packet (what is sent as data to the server) to 
@@ -101,7 +101,7 @@ public:
    * \param fill The byte to be repeated in constructing the packet data..
    * \param dataSize The desired size of the resulting echo packet data.
    */
-  void SetFill (uint8_t fill, uint32_t dataSize);
+  // void SetFill (uint8_t fill, uint32_t dataSize);
 
   /**
    * Set the data fill of the packet (what is sent as data to the server) to
@@ -119,7 +119,7 @@ public:
    * \param fillSize The number of bytes in the provided fill pattern.
    * \param dataSize The desired size of the final echo data.
    */
-  void SetFill (uint8_t *fill, uint32_t fillSize, uint32_t dataSize);
+  // void SetFill (uint8_t *fill, uint32_t fillSize, uint32_t dataSize);
 
 protected:
   virtual void DoDispose (void);
@@ -145,7 +145,7 @@ private:
   Time m_interval; //!< Packet inter-send time
   uint32_t m_size; //!< Size of the sent packet
 
-  uint32_t m_dataSize; //!< packet payload size (must be equal to m_size)
+  // uint32_t m_dataSize; //!< packet payload size (must be equal to m_size)
   uint8_t *m_data; //!< packet payload data
 
   uint32_t m_sent; //!< Counter for sent packets

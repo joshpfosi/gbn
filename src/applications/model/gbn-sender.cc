@@ -46,11 +46,6 @@ GbnSender::GetTypeId (void)
                    AddressValue(),
                    MakeAddressAccessor(&GbnSender::m_rcvr_addr),
                    MakeAddressChecker())
-    .AddAttribute ("PacketSize", "Size of data in outbound packets",
-                   UintegerValue (100),
-                   MakeUintegerAccessor (&GbnSender::SetDataSize,
-                                         &GbnSender::GetDataSize),
-                   MakeUintegerChecker<uint32_t> ())
   ;
   return tid;
 }
@@ -62,8 +57,7 @@ GbnSender::GbnSender ()
   m_sent = 0;
   m_sendEvent = EventId ();
   m_data = 0;
-  m_dataSize = 0;
-  m_interval = Seconds(0.001);
+  m_size = 1024;
 }
 
 GbnSender::~GbnSender()
@@ -72,7 +66,6 @@ GbnSender::~GbnSender()
 
   delete [] m_data;
   m_data = 0;
-  m_dataSize = 0;
 }
 
 void 
@@ -93,15 +86,22 @@ void
 GbnSender::StartApplication (void)
 {
   NS_LOG_FUNCTION (this);
-
   if (m_dev == 0)
     {
         m_dev = GetNode()->GetDevice(0);
+
+        DataRateValue rate;
+        m_dev->GetAttribute("DataRate", rate);
+
+        uint64_t data_rate = rate.Get().GetBitRate();
+        (void)data_rate;
+        m_interval = Seconds(0.001); //Seconds((double) m_size / (double) data_rate);
+        // L / R => PacketSize / DataRate
     }
 
   m_dev->SetReceiveCallback(MakeCallback(&GbnSender::HandleRead, this));
 
-  ScheduleTransmit (Seconds (0.));
+  ScheduleTransmit(Seconds(0.));
 }
 
 void 
@@ -110,109 +110,6 @@ GbnSender::StopApplication ()
   NS_LOG_FUNCTION (this);
 
   Simulator::Cancel (m_sendEvent);
-}
-
-void 
-GbnSender::SetDataSize (uint32_t dataSize)
-{
-  NS_LOG_FUNCTION (this << dataSize);
-
-  //
-  // If the client is setting the echo packet data size this way, we infer
-  // that she doesn't care about the contents of the packet at all, so 
-  // neither will we.
-  //
-  delete [] m_data;
-  m_data = 0;
-  m_dataSize = 0;
-  m_size = dataSize;
-}
-
-uint32_t 
-GbnSender::GetDataSize (void) const
-{
-  NS_LOG_FUNCTION (this);
-  return m_size;
-}
-
-void 
-GbnSender::SetFill (std::string fill)
-{
-  NS_LOG_FUNCTION (this << fill);
-
-  uint32_t dataSize = fill.size () + 1;
-
-  if (dataSize != m_dataSize)
-    {
-      delete [] m_data;
-      m_data = new uint8_t [dataSize];
-      m_dataSize = dataSize;
-    }
-
-  memcpy (m_data, fill.c_str (), dataSize);
-
-  //
-  // Overwrite packet size attribute.
-  //
-  m_size = dataSize;
-}
-
-void 
-GbnSender::SetFill (uint8_t fill, uint32_t dataSize)
-{
-  NS_LOG_FUNCTION (this << fill << dataSize);
-  if (dataSize != m_dataSize)
-    {
-      delete [] m_data;
-      m_data = new uint8_t [dataSize];
-      m_dataSize = dataSize;
-    }
-
-  memset (m_data, fill, dataSize);
-
-  //
-  // Overwrite packet size attribute.
-  //
-  m_size = dataSize;
-}
-
-void 
-GbnSender::SetFill (uint8_t *fill, uint32_t fillSize, uint32_t dataSize)
-{
-  NS_LOG_FUNCTION (this << fill << fillSize << dataSize);
-  if (dataSize != m_dataSize)
-    {
-      delete [] m_data;
-      m_data = new uint8_t [dataSize];
-      m_dataSize = dataSize;
-    }
-
-  if (fillSize >= dataSize)
-    {
-      memcpy (m_data, fill, dataSize);
-      m_size = dataSize;
-      return;
-    }
-
-  //
-  // Do all but the final fill.
-  //
-  uint32_t filled = 0;
-  while (filled + fillSize < dataSize)
-    {
-      memcpy (&m_data[filled], fill, fillSize);
-      filled += fillSize;
-    }
-
-  //
-  // Last fill may be partial
-  //
-  memcpy (&m_data[filled], fill, dataSize - filled);
-
-  //
-  // Overwrite packet size attribute.
-  //
-  m_size = dataSize;
 }
 
 void 
@@ -229,39 +126,20 @@ GbnSender::Send (void)
 
   NS_ASSERT (m_sendEvent.IsExpired ());
 
-  Ptr<Packet> p;
-  if (m_dataSize)
-    {
-      //
-      // If m_dataSize is non-zero, we have a data buffer of the same size that we
-      // are expected to copy and send.  This state of affairs is created if one of
-      // the Fill functions is called.  In this case, m_size must have been set
-      // to agree with m_dataSize
-      //
-      NS_ASSERT_MSG (m_dataSize == m_size, "GbnSender::Send(): m_size and m_dataSize inconsistent");
-      NS_ASSERT_MSG (m_data, "GbnSender::Send(): m_dataSize but no m_data");
-      p = Create<Packet> (m_data, m_dataSize);
-    }
-  else
-    {
-      //
-      // If m_dataSize is zero, the client has indicated that it doesn't care
-      // about the data itself either by specifying the data size by setting
-      // the corresponding attribute or by not calling a SetFill function.  In
-      // this case, we don't worry about it either.  But we do allow m_size
-      // to have a value different from the (zero) m_dataSize.
-      //
-      p = Create<Packet> (m_size);
-    }
+  Ptr<Packet> p = Create<Packet> (m_size);
+
   // call to the trace sinks before the packet is actually sent,
   // so that tags added to the packet can be sent as well
   m_txTrace (p);
-  NS_LOG_INFO ("At time " << Simulator::Now ().GetSeconds () <<
+  NS_LOG_DEBUG("At time " << Simulator::Now ().GetSeconds () <<
           "s sender sent " << p->GetSize () << " bytes mac " << m_rcvr_addr);
   m_dev->Send(p, m_rcvr_addr, 0x0800); // IPv4
   // disregard return value -- use ACKs to determine success
 
   ++m_sent;
+
+  NS_LOG_INFO("Sent packet " << m_sent << " at "
+          << Simulator::Now().GetSeconds());
 
   ScheduleTransmit (m_interval);
 }
@@ -275,8 +153,8 @@ GbnSender::HandleRead (Ptr<NetDevice> dev, Ptr<const Packet> p,
     uint16_t ack_no;
     p->CopyData((uint8_t *)&ack_no, sizeof(ack_no));
 
-    NS_LOG_INFO ("At time " << Simulator::Now ().GetSeconds () <<
-            "s sender received " << ack_no << " " << p->GetSize () << " bytes mac " << mac);
+    // NS_LOG_DEBUG("At time " << Simulator::Now ().GetSeconds () <<
+    //         "s sender received " << ack_no << " " << p->GetSize () << " bytes mac " << mac);
     return true;
 }
 

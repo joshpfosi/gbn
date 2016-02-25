@@ -86,24 +86,6 @@ GbnSenderHelper::SetAttribute (
   m_factory.Set (name, value);
 }
 
-void
-GbnSenderHelper::SetFill (Ptr<Application> app, std::string fill)
-{
-  app->GetObject<GbnSender>()->SetFill (fill);
-}
-
-void
-GbnSenderHelper::SetFill (Ptr<Application> app, uint8_t fill, uint32_t dataLength)
-{
-  app->GetObject<GbnSender>()->SetFill (fill, dataLength);
-}
-
-void
-GbnSenderHelper::SetFill (Ptr<Application> app, uint8_t *fill, uint32_t fillLength, uint32_t dataLength)
-{
-  app->GetObject<GbnSender>()->SetFill (fill, fillLength, dataLength);
-}
-
 ApplicationContainer
 GbnSenderHelper::Install (Ptr<Node> node) const
 {

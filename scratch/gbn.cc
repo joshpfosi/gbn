@@ -27,10 +27,13 @@ NS_LOG_COMPONENT_DEFINE ("GBN Throughput");
 int
 main (int argc, char *argv[])
 {
-  // TODO: Add CommandLine parser
   Time::SetResolution (Time::NS);
   LogComponentEnable("GbnSenderApplication", LOG_LEVEL_INFO);
   LogComponentEnable("GbnReceiverApplication", LOG_LEVEL_INFO);
+  LogComponentEnable("SimpleNetDevice", LOG_LEVEL_INFO);
+  LogComponentEnable("Queue", LOG_LEVEL_INFO);
+  LogComponentEnable("SimpleChannel", LOG_LEVEL_INFO);
+  LogComponentEnable("DataRate", LOG_LEVEL_INFO);
 
   NodeContainer nodes;
   nodes.Create(2);
@@ -39,9 +42,9 @@ main (int argc, char *argv[])
   double errorRate = 0.0;
 
   CommandLine cmd;
-  cmd.AddValue("Rate", "Data rate of devices", rate);
-  cmd.AddValue("Delay", "Delay of channel", delay);
-  cmd.AddValue("ErrorRate", "Receive error rate", errorRate);
+  cmd.AddValue("Rate", "Data rate of devices (R)", rate);
+  cmd.AddValue("Delay", "Delay of channel (t_prop)", delay);
+  cmd.AddValue("ErrorRate", "Receive error rate (P)", errorRate);
   cmd.Parse(argc, argv);
 
   SimpleNetDeviceHelper simpleNetDevice;
@@ -63,7 +66,7 @@ main (int argc, char *argv[])
 
   ApplicationContainer receiverApps = rcvr.Install (nodes.Get (1));
   receiverApps.Start(Seconds (1.0));
-  receiverApps.Stop(Seconds (3.5));
+  receiverApps.Stop(Seconds (1000));
 
   GbnSenderHelper sender(rcvrAddr);
   // TODO: parametrize on cmd line

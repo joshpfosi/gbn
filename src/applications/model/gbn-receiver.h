@@ -53,7 +53,7 @@ private:
 
   Ptr<NetDevice> m_dev;
 
-  uint8_t m_bytes_rx;
+  uint64_t m_bytes_rx;
   double m_last_rx;
 };
 
