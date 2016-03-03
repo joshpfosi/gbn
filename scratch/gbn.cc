@@ -1,24 +1,10 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
-/*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation;
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
 
 #include "ns3/core-module.h"
 #include "ns3/network-module.h"
 #include "ns3/internet-module.h"
-#include "ns3/simple-net-device-helper.h"
 #include "ns3/applications-module.h"
+#include "ns3/gbn-module.h"
 
 using namespace ns3;
 
@@ -30,9 +16,9 @@ main (int argc, char *argv[])
   Time::SetResolution (Time::NS);
   LogComponentEnable("GbnSenderApplication", LOG_LEVEL_INFO);
   LogComponentEnable("GbnReceiverApplication", LOG_LEVEL_INFO);
-  LogComponentEnable("SimpleNetDevice", LOG_LEVEL_INFO);
+  LogComponentEnable("GbnNetDevice", LOG_LEVEL_DEBUG);
   LogComponentEnable("Queue", LOG_LEVEL_INFO);
-  LogComponentEnable("SimpleChannel", LOG_LEVEL_INFO);
+  LogComponentEnable("GbnChannel", LOG_LEVEL_INFO);
   LogComponentEnable("DataRate", LOG_LEVEL_INFO);
 
   NodeContainer nodes;
@@ -47,18 +33,18 @@ main (int argc, char *argv[])
   cmd.AddValue("ErrorRate", "Receive error rate (P)", errorRate);
   cmd.Parse(argc, argv);
 
-  SimpleNetDeviceHelper simpleNetDevice;
-  simpleNetDevice.SetDeviceAttribute("DataRate", StringValue (rate));
-  simpleNetDevice.SetChannelAttribute("Delay", StringValue (delay));
-  simpleNetDevice.SetNetDevicePointToPointMode(true);
+  GbnNetDeviceHelper GbnNetDevice;
+  GbnNetDevice.SetDeviceAttribute("DataRate", StringValue (rate));
+  GbnNetDevice.SetChannelAttribute("Delay", StringValue (delay));
+  GbnNetDevice.SetNetDevicePointToPointMode(true);
 
   Ptr<RateErrorModel> rem = CreateObject<RateErrorModel>();
   rem->SetUnit(ns3::RateErrorModel::ERROR_UNIT_PACKET);
   rem->SetRate(errorRate);
 
-  simpleNetDevice.SetDeviceAttribute("ReceiveErrorModel", PointerValue(rem));
+  GbnNetDevice.SetDeviceAttribute("ReceiveErrorModel", PointerValue(rem));
 
-  simpleNetDevice.Install(nodes);
+  GbnNetDevice.Install(nodes);
 
   Address rcvrAddr = nodes.Get(1)->GetDevice(0)->GetAddress(); // Mac48Address
 
@@ -74,7 +60,7 @@ main (int argc, char *argv[])
 
   ApplicationContainer senderApps = sender.Install (nodes.Get (0));
   senderApps.Start (Seconds (2.0));
-  senderApps.Stop (Seconds (2.5));
+  senderApps.Stop (Seconds (2.2));
 
   Simulator::Run ();
   Simulator::Destroy ();

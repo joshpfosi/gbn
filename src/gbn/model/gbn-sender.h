@@ -24,7 +24,7 @@
 #include "ns3/ptr.h"
 #include "ns3/mac48-address.h"
 #include "ns3/traced-callback.h"
-#include "ns3/simple-net-device.h"
+#include "ns3/gbn-net-device.h"
 
 namespace ns3 {
 

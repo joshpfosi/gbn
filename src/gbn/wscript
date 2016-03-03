@@ -1,0 +1,40 @@
+# -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+# def options(opt):
+#     pass
+
+# def configure(conf):
+#     conf.check_nonfatal(header_name='stdint.h', define_name='HAVE_STDINT_H')
+
+def build(bld):
+    gbn = bld.create_ns3_module('gbn', ['core', 'stats', 'network'])
+    gbn.source = [
+        'model/gbn-receiver.cc',
+        'model/gbn-sender.cc',
+        'helper/gbn-helper.cc',
+        'helper/gbn-net-device-helper.cc',
+        'utils/gbn-net-device.cc',
+        'utils/gbn-channel.cc'
+        ]
+
+    gbn_test = bld.create_ns3_module_test_library('gbn')
+    gbn_test.source = [
+        'test/gbn-test-suite.cc',
+        ]
+
+    headers = bld(features='ns3header')
+    headers.module = 'gbn'
+    headers.source = [
+        'model/gbn-receiver.h',
+        'model/gbn-sender.h',
+        'helper/gbn-helper.h',
+        'helper/gbn-net-device-helper.h',
+        'utils/gbn-net-device.h',
+        'utils/gbn-channel.h'
+        ]
+
+    if bld.env.ENABLE_EXAMPLES:
+        bld.recurse('examples')
+
+    # bld.ns3_python_bindings()
+
