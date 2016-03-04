@@ -30,6 +30,7 @@
 #include "ns3/tag.h"
 #include "ns3/simulator.h"
 #include "ns3/drop-tail-queue.h"
+#include "ns3/uinteger.h"
 
 namespace ns3 {
 
@@ -205,6 +206,11 @@ GbnNetDevice::GetTypeId (void)
                    StringValue ("ns3::DropTailQueue"),
                    MakePointerAccessor (&GbnNetDevice::m_queue),
                    MakePointerChecker<Queue> ())
+    .AddAttribute ("WindowSize",
+                   "The window size used in GBN ARQ",
+                   UintegerValue (10),
+                   MakeUintegerAccessor (&GbnNetDevice::m_wsize),
+                   MakeUintegerChecker<size_t>())
     .AddAttribute ("DataRate",
                    "The default data rate for point to point links. Zero means infinite",
                    DataRateValue (DataRate ("0b/s")),
@@ -224,9 +230,13 @@ GbnNetDevice::GbnNetDevice ()
     m_node (0),
     m_mtu (0xffff),
     m_ifIndex (0),
-    m_linkUp (false)
+    m_linkUp (false),
+    m_wsize (10),
+    m_window(m_wsize),
+    m_wstart(m_window.begin())
 {
   NS_LOG_FUNCTION (this);
+  (void)m_wstart;
 }
 
 void

@@ -22,6 +22,7 @@
 
 #include <stdint.h>
 #include <string>
+#include <vector>
 
 #include "ns3/traced-callback.h"
 #include "ns3/net-device.h"
@@ -171,6 +172,11 @@ private:
    * Enabling this will disable Broadcast and Arp.
    */
   bool m_pointToPointMode;
+
+  // GBN window management
+  size_t m_wsize;
+  std::vector< Ptr<Packet> > m_window;
+  std::vector< Ptr<Packet> >::const_iterator m_wstart;
 
   Ptr<Queue> m_queue; //!< The Queue for outgoing packets.
   DataRate m_bps; //!< The device nominal Data rate. Zero means infinite
