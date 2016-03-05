@@ -19,6 +19,7 @@
  */
 #include "gbn-net-device.h"
 #include "gbn-channel.h"
+#include "gbn-header.h"
 #include "ns3/node.h"
 #include "ns3/packet.h"
 #include "ns3/log.h"
@@ -92,7 +93,6 @@ private:
   Mac48Address m_dst; //!< destination address
   uint16_t m_protocolNumber; //!< protocol number
 };
-
 
 NS_OBJECT_ENSURE_REGISTERED (GbnTag);
 
@@ -180,8 +180,6 @@ GbnTag::Print (std::ostream &os) const
   os << "src=" << m_src << " dst=" << m_dst << " proto=" << m_protocolNumber;
 }
 
-
-
 NS_OBJECT_ENSURE_REGISTERED (GbnNetDevice);
 
 TypeId 
@@ -233,10 +231,10 @@ GbnNetDevice::GbnNetDevice ()
     m_linkUp (false),
     m_wsize (10),
     m_window(m_wsize),
-    m_wstart(m_window.begin())
+    m_wstart(m_window.begin()),
+    m_expected_seqno(0)
 {
   NS_LOG_FUNCTION (this);
-  (void)m_wstart;
 }
 
 void
@@ -271,7 +269,30 @@ GbnNetDevice::Receive (Ptr<Packet> packet, uint16_t protocol,
 
   if (packetType != NetDevice::PACKET_OTHERHOST)
     {
-      m_rxCallback (this, packet, protocol, from);
+      GbnHeader header;
+      packet->RemoveHeader(header);
+
+      NS_LOG_DEBUG("header seqno=" << header.GetSeqno() << " == " << m_expected_seqno);
+      if (header.GetIsAck())
+        {
+            NS_LOG_DEBUG("Received ACK for seqno=" << header.GetSeqno());
+            // TODO: Shift window
+        }
+      else if (header.GetSeqno() == m_expected_seqno) 
+        {
+            // TODO: Send ACK
+            // Do we use SendFrom here or m_channel->Send()?
+            // SendFrom is more realistic but m_channel->Send() is probably
+            // required b/c the analytical models do not account for ACKs
+            // whatsoever
+            ++m_expected_seqno;
+            m_rxCallback (this, packet, protocol, from);
+        }
+      else // not an ACK but also not correct seqno, so DROP
+        {
+            m_phyRxDropTrace (packet);
+            return;
+        }
     }
 
   if (!m_promiscCallback.IsNull ())
@@ -448,18 +469,23 @@ GbnNetDevice::SendFrom (Ptr<Packet> p, const Address& source, const Address& des
   Mac48Address from = Mac48Address::ConvertFrom (source);
 
   GbnTag tag;
-  tag.SetSrc (from);
-  tag.SetDst (to);
-  tag.SetProto (protocolNumber);
+  tag.SetSrc(from);
+  tag.SetDst(to);
+  tag.SetProto(protocolNumber);
 
-  p->AddPacketTag (tag);
+  GbnHeader header;
+  static uint64_t seqno = 0;
+  header.SetSeqno(seqno);
+  ++seqno;
+  // header.SetSeqno(m_wstart - m_window.begin());
+
+  p->AddPacketTag(tag);
+  p->AddHeader(header);
 
   if (m_queue->Enqueue (p))
     {
-      if (m_queue->GetNPackets () == 1 && !TransmitCompleteEvent.IsRunning ())
+      if (!TransmitCompleteEvent.IsRunning ())
         {
-          p = m_queue->Dequeue ();
-          p->RemovePacketTag (tag);
           Time txTime = Time (0);
           if (m_bps > DataRate (0))
             {
@@ -493,8 +519,12 @@ GbnNetDevice::TransmitComplete ()
   Mac48Address dst = tag.GetDst ();
   uint16_t proto = tag.GetProto ();
 
+  GbnHeader header;
+  packet->PeekHeader(header);
+  NS_LOG_DEBUG("Sending seqno=" << header.GetSeqno());
   m_channel->Send (packet, proto, dst, src, this);
 
+  NS_LOG_DEBUG("In TransmitComplete, after dequeue, queue size is " << m_queue->GetNPackets());
   if (m_queue->GetNPackets ())
     {
       Time txTime = Time (0);

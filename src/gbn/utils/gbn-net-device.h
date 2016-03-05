@@ -178,6 +178,8 @@ private:
   std::vector< Ptr<Packet> > m_window;
   std::vector< Ptr<Packet> >::const_iterator m_wstart;
 
+  size_t m_expected_seqno;
+
   Ptr<Queue> m_queue; //!< The Queue for outgoing packets.
   DataRate m_bps; //!< The device nominal Data rate. Zero means infinite
   EventId TransmitCompleteEvent; //!< the Tx Complete event

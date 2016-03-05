@@ -14,7 +14,8 @@ def build(bld):
         'helper/gbn-helper.cc',
         'helper/gbn-net-device-helper.cc',
         'utils/gbn-net-device.cc',
-        'utils/gbn-channel.cc'
+        'utils/gbn-channel.cc',
+        'utils/gbn-header.cc'
         ]
 
     gbn_test = bld.create_ns3_module_test_library('gbn')
@@ -30,7 +31,8 @@ def build(bld):
         'helper/gbn-helper.h',
         'helper/gbn-net-device-helper.h',
         'utils/gbn-net-device.h',
-        'utils/gbn-channel.h'
+        'utils/gbn-channel.h',
+        'utils/gbn-header.h'
         ]
 
     if bld.env.ENABLE_EXAMPLES:
