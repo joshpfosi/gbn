@@ -165,6 +165,8 @@ private:
    */
   void TransmitComplete (void);
 
+  bool isWindowFull (void) const;
+
   bool m_linkUp; //!< Flag indicating whether or not the link is up
 
   /**
@@ -176,9 +178,12 @@ private:
   // GBN window management
   size_t m_wsize;
   std::vector< Ptr<Packet> > m_window;
-  std::vector< Ptr<Packet> >::const_iterator m_wstart;
+
+  // Points to next packet to be sent in window
+  std::vector< Ptr<Packet> >::iterator m_inflight;
 
   size_t m_expected_seqno;
+  size_t m_seqno;
 
   Ptr<Queue> m_queue; //!< The Queue for outgoing packets.
   DataRate m_bps; //!< The device nominal Data rate. Zero means infinite

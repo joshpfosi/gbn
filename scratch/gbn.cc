@@ -55,12 +55,11 @@ main (int argc, char *argv[])
   receiverApps.Stop(Seconds (1000));
 
   GbnSenderHelper sender(rcvrAddr);
-  // TODO: parametrize on cmd line
-  // sender.SetAttribute ("WindowSize", UintegerValue (1));
+  // sender.SetAttribute ("WindowSize", UintegerValue (10));
 
   ApplicationContainer senderApps = sender.Install (nodes.Get (0));
   senderApps.Start (Seconds (2.0));
-  senderApps.Stop (Seconds (2.2));
+  senderApps.Stop (Seconds (2.05));
 
   Simulator::Run ();
   Simulator::Destroy ();
