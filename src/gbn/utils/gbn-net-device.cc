@@ -536,6 +536,24 @@ GbnNetDevice::SendFrom (Ptr<Packet> p, const Address& source, const Address& des
 }
 
 void
+GbnNetDevice::Timeout ()
+{
+    m_inflight = m_window.begin();
+
+    NS_LOG_FUNCTION (this);
+    
+    if (!TransmitCompleteEvent.IsRunning ())
+    {
+        Time txTime = Time (0);
+        if (m_bps > DataRate (0))
+        {
+            txTime = m_bps.CalculateBytesTxTime ((*m_inflight)->GetSize ());
+        }
+        TransmitCompleteEvent = Simulator::Schedule (txTime, &GbnNetDevice::TransmitComplete, this);
+    }
+}
+
+void
 GbnNetDevice::TransmitComplete ()
 {
   NS_LOG_FUNCTION (this);

@@ -165,6 +165,8 @@ private:
    */
   void TransmitComplete (void);
 
+  void Timeout (void);
+
   bool isWindowFull (void) const;
 
   bool m_linkUp; //!< Flag indicating whether or not the link is up
