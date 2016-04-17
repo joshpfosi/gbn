@@ -45,10 +45,13 @@ NS_LOG_COMPONENT_DEFINE ("ThirdScriptExample");
 int 
 main (int argc, char *argv[])
 {
-  bool verbose = true;
-  const uint32_t nCsma = 3;
-  const uint32_t nWifi = 3;
-  bool tracing = false;
+  bool verbose             = true;
+  const uint32_t nCsma     = 3;
+  const uint32_t nWifi     = 3;
+  const uint32_t WIFI_AP   = 1;
+  const uint32_t ETHERNET  = 0;
+  const uint32_t SATELLITE = 0;
+  bool tracing             = false;
 
   CommandLine cmd;
   cmd.AddValue ("verbose", "Tell echo applications to log if true", verbose);
@@ -64,21 +67,44 @@ main (int argc, char *argv[])
 
   // --------------------------------------------------------------------------
   // P2P links
-  NodeContainer p2pNodes;
+  NodeContainer p2pNodes, gbnNodes;
   p2pNodes.Create (2);
+  gbnNodes.Create (6);
 
   PointToPointHelper pointToPoint;
+
+  // GBN links
   pointToPoint.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
   pointToPoint.SetChannelAttribute ("Delay", StringValue ("2ms"));
 
+  // TODO: Should use GBN links
   NetDeviceContainer p2pDevices;
-  p2pDevices = pointToPoint.Install (p2pNodes);
+  p2pDevices.Add(pointToPoint.Install(p2pNodes.Get(ETHERNET), gbnNodes.Get(1)));
+  p2pDevices.Add(pointToPoint.Install(p2pNodes.Get(ETHERNET), gbnNodes.Get(2)));
+  p2pDevices.Add(pointToPoint.Install(p2pNodes.Get(ETHERNET), gbnNodes.Get(3)));
+  p2pDevices.Add(pointToPoint.Install(p2pNodes.Get(WIFI_AP), gbnNodes.Get(1)));
+  p2pDevices.Add(pointToPoint.Install(p2pNodes.Get(WIFI_AP), gbnNodes.Get(3)));
+  p2pDevices.Add(pointToPoint.Install(p2pNodes.Get(WIFI_AP), gbnNodes.Get(4)));
+  p2pDevices.Add(pointToPoint.Install(gbnNodes.Get(2), gbnNodes.Get(3)));
+  p2pDevices.Add(pointToPoint.Install(gbnNodes.Get(2), gbnNodes.Get(5)));
+  p2pDevices.Add(pointToPoint.Install(gbnNodes.Get(3), gbnNodes.Get(4)));
+  p2pDevices.Add(pointToPoint.Install(gbnNodes.Get(4), gbnNodes.Get(5)));
+
+  // Satellite links
+  pointToPoint.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
+  pointToPoint.SetChannelAttribute ("Delay", StringValue ("100ms"));
+  // Satellite link is SLOW
+
+  p2pDevices.Add(pointToPoint.Install(p2pNodes.Get(ETHERNET),
+              gbnNodes.Get(SATELLITE)));
+  p2pDevices.Add(pointToPoint.Install(gbnNodes.Get(SATELLITE),
+              p2pNodes.Get(WIFI_AP)));
   // --------------------------------------------------------------------------
 
   // --------------------------------------------------------------------------
   // Ethernet links
   NodeContainer csmaNodes;
-  csmaNodes.Add (p2pNodes.Get (1));
+  csmaNodes.Add (p2pNodes.Get (ETHERNET));
   csmaNodes.Create (nCsma);
 
   CsmaHelper csma;
@@ -93,7 +119,7 @@ main (int argc, char *argv[])
   // WiFi links
   NodeContainer wifiStaNodes;
   wifiStaNodes.Create (nWifi);
-  NodeContainer wifiApNode = p2pNodes.Get (0);
+  NodeContainer wifiApNode = p2pNodes.Get (WIFI_AP);
 
   YansWifiChannelHelper channel = YansWifiChannelHelper::Default ();
   YansWifiPhyHelper phy = YansWifiPhyHelper::Default ();
@@ -146,12 +172,15 @@ main (int argc, char *argv[])
   stack.Install (csmaNodes);
   stack.Install (wifiApNode);
   stack.Install (wifiStaNodes);
+  stack.Install (gbnNodes);
+  // NOTE: p2pNodes are assigned via [csma,wifiAp]Nodes
 
   Ipv4AddressHelper address;
 
   address.SetBase ("10.1.1.0", "255.255.255.0");
   Ipv4InterfaceContainer p2pInterfaces;
   p2pInterfaces = address.Assign (p2pDevices);
+  // TODO: Assign addresses to GBN links
 
   address.SetBase ("10.1.2.0", "255.255.255.0");
   Ipv4InterfaceContainer csmaInterfaces;
@@ -164,7 +193,7 @@ main (int argc, char *argv[])
 
   // --------------------------------------------------------------------------
   // Set up applications
-  UdpEchoServerHelper echoServer (9);
+  UdpEchoServerHelper echoServer (9); // port 9
 
   ApplicationContainer serverApps = echoServer.Install (csmaNodes.Get (nCsma));
   serverApps.Start (Seconds (1.0));
@@ -183,6 +212,8 @@ main (int argc, char *argv[])
 
   // Configure routing tables for all nodes
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
+  // TODO: May want to use static routing
+  // (https://www.nsnam.org/doxygen/static-routing-slash32_8cc_source.html)
 
   Simulator::Stop (Seconds (10.0));
 
