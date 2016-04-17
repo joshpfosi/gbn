@@ -27,17 +27,23 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("ThirdScriptExample");
 
+double lastRx;
+
+void RxTracer(Ptr< const Packet > packet, const Address &address)
+{
+    lastRx = Simulator::Now().GetSeconds();
+}
+
 int 
 main (int argc, char *argv[])
 {
   const uint32_t nCsma    = 3;
   const uint32_t nWifi    = 3;
-
   const uint32_t WIFI     = 1;
   const uint32_t ETHERNET = 0;
 
-  uint32_t maxBytes     = 0;
   double errorRate      = 0.0;
+  uint32_t maxBytes     = 1 << 16;
   bool verbose          = true;
   bool tracing          = false;
   std::string gbnRate   = "5Mbps";
@@ -51,7 +57,6 @@ main (int argc, char *argv[])
 
   cmd.AddValue ("verbose",  "Tell echo applications to log if true", verbose);
   cmd.AddValue ("tracing",  "Enable pcap tracing",                   tracing);
-  cmd.AddValue ("maxBytes", "Total bytes for application to send",   maxBytes);
   cmd.AddValue("ErrorRate", "Receive error rate (P)",                errorRate);
   cmd.AddValue("GbnRate",   "Data rate of GBN devices (R)",          gbnRate);
   cmd.AddValue("GbnDelay",  "Delay of GBN channel (t_prop)",         gbnDelay);
@@ -216,13 +221,10 @@ main (int argc, char *argv[])
           InetSocketAddress(wifiAddresses.GetAddress(nWifi - 1), port));
   source.SetAttribute("OnTime", StringValue("ns3::ConstantRandomVariable[Constant=1]"));
   source.SetAttribute("OffTime", StringValue("ns3::ConstantRandomVariable[Constant=0]"));
-
-  // Set the amount of data to send in bytes.  Zero is unlimited.
-  source.SetAttribute("MaxBytes", UintegerValue (maxBytes));
+  source.SetAttribute("MaxBytes", UintegerValue(maxBytes));
 
   ApplicationContainer sourceApps = source.Install(csmaNodes.Get(nCsma));
   sourceApps.Start(Seconds (0.0));
-  sourceApps.Stop(Seconds (10.0));
   // --------------------------------------------------------------------------
 
   // --------------------------------------------------------------------------
@@ -231,7 +233,10 @@ main (int argc, char *argv[])
                          InetSocketAddress(Ipv4Address::GetAny(), port));
   ApplicationContainer sinkApps = sink.Install(wifiStaNodes.Get(nWifi - 1));
   sinkApps.Start(Seconds(0.0));
-  sinkApps.Stop(Seconds(10.0));
+
+  // Enable tracing for last received packet
+  Ptr<PacketSink> sink1 = DynamicCast<PacketSink>(sinkApps.Get(0));
+  sink1->TraceConnectWithoutContext("Rx", MakeCallback(&RxTracer));
   // --------------------------------------------------------------------------
 
   // Configure routing tables for all nodes
@@ -252,8 +257,7 @@ main (int argc, char *argv[])
   Simulator::Run();
   Simulator::Destroy();
 
-  Ptr<PacketSink> sink1 = DynamicCast<PacketSink>(sinkApps.Get(0));
-  std::cout << "Total Bytes Received: " << sink1->GetTotalRx() << std::endl;
+  std::cout << "Throughput: " << sink1->GetTotalRx() * 8 / lastRx << "bps" << std::endl;
 
   return 0;
 }
