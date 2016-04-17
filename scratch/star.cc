@@ -30,17 +30,21 @@ NS_LOG_COMPONENT_DEFINE ("ThirdScriptExample");
 int 
 main (int argc, char *argv[])
 {
-  bool verbose             = true;
   const uint32_t nCsma     = 3;
   const uint32_t nWifi     = 3;
   const uint32_t WIFI_AP   = 1;
   const uint32_t ETHERNET  = 0;
   const uint32_t SATELLITE = 0;
+
+  uint32_t maxBytes        = 0;
+  bool verbose             = true;
   bool tracing             = false;
 
   CommandLine cmd;
   cmd.AddValue ("verbose", "Tell echo applications to log if true", verbose);
   cmd.AddValue ("tracing", "Enable pcap tracing", tracing);
+  cmd.AddValue ("maxBytes",
+                "Total number of bytes for application to send", maxBytes);
 
   cmd.Parse (argc,argv);
 
@@ -172,30 +176,35 @@ main (int argc, char *argv[])
   csmaInterfaces = address.Assign (csmaDevices);
 
   address.SetBase ("10.1.3.0", "255.255.255.0");
-  address.Assign (staDevices);
+  Ipv4InterfaceContainer wifiAddresses = address.Assign (staDevices);
   address.Assign (apDevices);
   // --------------------------------------------------------------------------
 
   // --------------------------------------------------------------------------
-  // Set up applications
-  UdpEchoServerHelper echoServer (9); // port 9
+  // Server
+  uint16_t port = 9;
+  BulkSendHelper source ("ns3::TcpSocketFactory",
+          InetSocketAddress(wifiAddresses.GetAddress(nWifi - 1), port));
 
-  ApplicationContainer serverApps = echoServer.Install (csmaNodes.Get (nCsma));
-  serverApps.Start (Seconds (1.0));
-  serverApps.Stop (Seconds (10.0));
+  // Set the amount of data to send in bytes.  Zero is unlimited.
+  source.SetAttribute ("MaxBytes", UintegerValue (maxBytes));
 
-  UdpEchoClientHelper echoClient (csmaInterfaces.GetAddress (nCsma), 9);
-  echoClient.SetAttribute ("MaxPackets", UintegerValue (1));
-  echoClient.SetAttribute ("Interval", TimeValue (Seconds (1.0)));
-  echoClient.SetAttribute ("PacketSize", UintegerValue (1024));
+  ApplicationContainer sourceApps = source.Install (csmaNodes.Get(nCsma));
+  sourceApps.Start (Seconds (0.0));
+  sourceApps.Stop (Seconds (10.0));
+  // --------------------------------------------------------------------------
 
-  ApplicationContainer clientApps = 
-    echoClient.Install (wifiStaNodes.Get (nWifi - 1));
-  clientApps.Start (Seconds (2.0));
-  clientApps.Stop (Seconds (10.0));
+  // --------------------------------------------------------------------------
+  // Client
+  PacketSinkHelper sink ("ns3::TcpSocketFactory",
+                         InetSocketAddress (Ipv4Address::GetAny (), port));
+  ApplicationContainer sinkApps = sink.Install (wifiStaNodes.Get(nWifi - 1));
+  sinkApps.Start (Seconds (0.0));
+  sinkApps.Stop (Seconds (10.0));
   // --------------------------------------------------------------------------
 
   // Configure routing tables for all nodes
+  // NOTE: Commented out an assertion here
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
   // TODO: May want to use static routing
   // (https://www.nsnam.org/doxygen/static-routing-slash32_8cc_source.html)
@@ -211,6 +220,9 @@ main (int argc, char *argv[])
 
   Simulator::Run ();
   Simulator::Destroy ();
+
+  Ptr<PacketSink> sink1 = DynamicCast<PacketSink> (sinkApps.Get (0));
+  std::cout << "Total Bytes Received: " << sink1->GetTotalRx () << std::endl;
 
   return 0;
 }
