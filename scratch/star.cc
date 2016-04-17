@@ -32,9 +32,8 @@ main (int argc, char *argv[])
 {
   const uint32_t nCsma     = 3;
   const uint32_t nWifi     = 3;
-  const uint32_t WIFI_AP   = 1;
+  const uint32_t WIFI   = 1;
   const uint32_t ETHERNET  = 0;
-  const uint32_t SATELLITE = 0;
 
   uint32_t maxBytes        = 0;
   bool verbose             = true;
@@ -55,45 +54,52 @@ main (int argc, char *argv[])
     }
 
   // --------------------------------------------------------------------------
-  // P2P links
-  NodeContainer p2pNodes, gbnNodes;
-  p2pNodes.Create (2);
-  gbnNodes.Create (6);
+  // Border routers
+  NodeContainer borderNodes;
+  borderNodes.Create (2);
+  // --------------------------------------------------------------------------
 
-  PointToPointHelper pointToPoint;
-
+  // --------------------------------------------------------------------------
   // GBN links
-  pointToPoint.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
-  pointToPoint.SetChannelAttribute ("Delay", StringValue ("2ms"));
+  NodeContainer gbnNodes;
+  gbnNodes.Create (5);
 
-  // TODO: Should use GBN links
-  NetDeviceContainer p2pDevices;
-  p2pDevices.Add(pointToPoint.Install(p2pNodes.Get(ETHERNET), gbnNodes.Get(1)));
-  p2pDevices.Add(pointToPoint.Install(p2pNodes.Get(ETHERNET), gbnNodes.Get(2)));
-  p2pDevices.Add(pointToPoint.Install(p2pNodes.Get(ETHERNET), gbnNodes.Get(3)));
-  p2pDevices.Add(pointToPoint.Install(p2pNodes.Get(WIFI_AP), gbnNodes.Get(1)));
-  p2pDevices.Add(pointToPoint.Install(p2pNodes.Get(WIFI_AP), gbnNodes.Get(3)));
-  p2pDevices.Add(pointToPoint.Install(p2pNodes.Get(WIFI_AP), gbnNodes.Get(4)));
-  p2pDevices.Add(pointToPoint.Install(gbnNodes.Get(2), gbnNodes.Get(3)));
-  p2pDevices.Add(pointToPoint.Install(gbnNodes.Get(2), gbnNodes.Get(5)));
-  p2pDevices.Add(pointToPoint.Install(gbnNodes.Get(3), gbnNodes.Get(4)));
-  p2pDevices.Add(pointToPoint.Install(gbnNodes.Get(4), gbnNodes.Get(5)));
+  PointToPointHelper gbn; // TODO: Should use GBN links
+  gbn.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
+  gbn.SetChannelAttribute ("Delay", StringValue ("2ms"));
 
+  NetDeviceContainer gbnDevices;
+
+  gbnDevices.Add(gbn.Install(borderNodes.Get(ETHERNET), gbnNodes.Get(0)));
+  gbnDevices.Add(gbn.Install(borderNodes.Get(ETHERNET), gbnNodes.Get(1)));
+  gbnDevices.Add(gbn.Install(borderNodes.Get(ETHERNET), gbnNodes.Get(2)));
+  gbnDevices.Add(gbn.Install(borderNodes.Get(WIFI),     gbnNodes.Get(0)));
+  gbnDevices.Add(gbn.Install(borderNodes.Get(WIFI),     gbnNodes.Get(1)));
+  gbnDevices.Add(gbn.Install(borderNodes.Get(WIFI),     gbnNodes.Get(3)));
+  gbnDevices.Add(gbn.Install(gbnNodes.Get(2),           gbnNodes.Get(1)));
+  gbnDevices.Add(gbn.Install(gbnNodes.Get(2),           gbnNodes.Get(4)));
+  gbnDevices.Add(gbn.Install(gbnNodes.Get(3),           gbnNodes.Get(1)));
+  gbnDevices.Add(gbn.Install(gbnNodes.Get(3),           gbnNodes.Get(4)));
+  // --------------------------------------------------------------------------
+
+  // --------------------------------------------------------------------------
   // Satellite links
-  pointToPoint.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
-  pointToPoint.SetChannelAttribute ("Delay", StringValue ("100ms"));
+  NodeContainer satNodes;
+  satNodes.Create (1);
+
+  PointToPointHelper satellite;
+  satellite.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
+  satellite.SetChannelAttribute ("Delay", StringValue ("100ms"));
   // Satellite link is SLOW
 
-  p2pDevices.Add(pointToPoint.Install(p2pNodes.Get(ETHERNET),
-              gbnNodes.Get(SATELLITE)));
-  p2pDevices.Add(pointToPoint.Install(gbnNodes.Get(SATELLITE),
-              p2pNodes.Get(WIFI_AP)));
+  gbnDevices.Add(satellite.Install(borderNodes.Get(ETHERNET), satNodes.Get(0)));
+  gbnDevices.Add(satellite.Install(satNodes.Get(0), borderNodes.Get(WIFI)));
   // --------------------------------------------------------------------------
 
   // --------------------------------------------------------------------------
   // Ethernet links
   NodeContainer csmaNodes;
-  csmaNodes.Add (p2pNodes.Get (ETHERNET));
+  csmaNodes.Add (borderNodes.Get (ETHERNET));
   csmaNodes.Create (nCsma);
 
   CsmaHelper csma;
@@ -108,7 +114,7 @@ main (int argc, char *argv[])
   // WiFi links
   NodeContainer wifiStaNodes;
   wifiStaNodes.Create (nWifi);
-  NodeContainer wifiApNode = p2pNodes.Get (WIFI_AP);
+  NodeContainer wifiApNode = borderNodes.Get (WIFI);
 
   YansWifiChannelHelper channel = YansWifiChannelHelper::Default ();
   YansWifiPhyHelper phy = YansWifiPhyHelper::Default ();
@@ -162,14 +168,14 @@ main (int argc, char *argv[])
   stack.Install (wifiApNode);
   stack.Install (wifiStaNodes);
   stack.Install (gbnNodes);
-  // NOTE: p2pNodes are assigned via [csma,wifiAp]Nodes
+  stack.Install (satNodes);
+  // NOTE: borderNodes are assigned via [csma,wifiAp]Nodes
 
   Ipv4AddressHelper address;
 
   address.SetBase ("10.1.1.0", "255.255.255.0");
-  Ipv4InterfaceContainer p2pInterfaces;
-  p2pInterfaces = address.Assign (p2pDevices);
-  // TODO: Assign addresses to GBN links
+  Ipv4InterfaceContainer gbnInterfaces;
+  gbnInterfaces = address.Assign (gbnDevices);
 
   address.SetBase ("10.1.2.0", "255.255.255.0");
   Ipv4InterfaceContainer csmaInterfaces;
@@ -213,7 +219,7 @@ main (int argc, char *argv[])
 
   if (tracing == true)
     {
-      pointToPoint.EnablePcapAll ("third");
+      gbn.EnablePcapAll ("third");
       phy.EnablePcap ("third", apDevices.Get (0));
       csma.EnablePcap ("third", csmaDevices.Get (0), true);
     }
