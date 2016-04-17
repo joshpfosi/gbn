@@ -46,26 +46,15 @@ int
 main (int argc, char *argv[])
 {
   bool verbose = true;
-  uint32_t nCsma = 3;
-  uint32_t nWifi = 3;
+  const uint32_t nCsma = 3;
+  const uint32_t nWifi = 3;
   bool tracing = false;
 
   CommandLine cmd;
-  cmd.AddValue ("nCsma", "Number of \"extra\" CSMA nodes/devices", nCsma);
-  cmd.AddValue ("nWifi", "Number of wifi STA devices", nWifi);
   cmd.AddValue ("verbose", "Tell echo applications to log if true", verbose);
   cmd.AddValue ("tracing", "Enable pcap tracing", tracing);
 
   cmd.Parse (argc,argv);
-
-  // Check for valid number of csma or wifi nodes
-  // 250 should be enough, otherwise IP addresses 
-  // soon become an issue
-  if (nWifi > 250 || nCsma > 250)
-    {
-      std::cout << "Too many wifi or csma nodes, no more than 250 each." << std::endl;
-      return 1;
-    }
 
   if (verbose)
     {
