@@ -36,17 +36,31 @@ main (int argc, char *argv[])
   const uint32_t WIFI     = 1;
   const uint32_t ETHERNET = 0;
 
-  uint32_t maxBytes = 0;
-  double errorRate  = 0.0;
-  bool verbose      = true;
-  bool tracing      = false;
+  uint32_t maxBytes     = 0;
+  double errorRate      = 0.0;
+  bool verbose          = true;
+  bool tracing          = false;
+  std::string gbnRate   = "5Mbps";
+  std::string gbnDelay  = "2ms";
+  std::string satRate   = "1Kbps";
+  std::string satDelay  = "200ms";
+  std::string csmaRate  = "5Mbps";
+  std::string csmaDelay = "2ms";
 
   CommandLine cmd;
-  cmd.AddValue ("verbose", "Tell echo applications to log if true", verbose);
-  cmd.AddValue ("tracing", "Enable pcap tracing", tracing);
-  cmd.AddValue ("maxBytes",
-                "Total number of bytes for application to send", maxBytes);
-  cmd.AddValue("ErrorRate", "Receive error rate (P)", errorRate);
+
+  cmd.AddValue ("verbose",  "Tell echo applications to log if true", verbose);
+  cmd.AddValue ("tracing",  "Enable pcap tracing",                   tracing);
+  cmd.AddValue ("maxBytes", "Total bytes for application to send",   maxBytes);
+  cmd.AddValue("ErrorRate", "Receive error rate (P)",                errorRate);
+  cmd.AddValue("GbnRate",   "Data rate of GBN devices (R)",          gbnRate);
+  cmd.AddValue("GbnDelay",  "Delay of GBN channel (t_prop)",         gbnDelay);
+  cmd.AddValue("SatRate",   "Data rate of sat devices (R)",          satRate);
+  cmd.AddValue("SatDelay",  "Delay of sat channel (t_prop)",         satDelay);
+  cmd.AddValue("CsmaRate",  "Data rate of csma devices (R)",         csmaRate);
+  cmd.AddValue("CsmaDelay", "Delay of csma channel (t_prop)",        csmaDelay);
+  // TODO: Change traffic distribution
+  // TODO: Change error distribution
 
   cmd.Parse (argc,argv);
 
@@ -68,8 +82,8 @@ main (int argc, char *argv[])
   gbnNodes.Create (5);
 
   PointToPointHelper gbn; // TODO: Should use GBN links
-  gbn.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
-  gbn.SetChannelAttribute ("Delay", StringValue ("2ms"));
+  gbn.SetDeviceAttribute("DataRate", StringValue(gbnRate));
+  gbn.SetChannelAttribute("Delay",   StringValue(gbnDelay));
 
   Ptr<RateErrorModel> rem = CreateObject<RateErrorModel>();
   rem->SetUnit(ns3::RateErrorModel::ERROR_UNIT_PACKET);
@@ -97,8 +111,8 @@ main (int argc, char *argv[])
   satNodes.Create (1);
 
   PointToPointHelper satellite;
-  satellite.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
-  satellite.SetChannelAttribute ("Delay", StringValue ("100ms"));
+  satellite.SetDeviceAttribute("DataRate", StringValue(satRate));
+  satellite.SetChannelAttribute("Delay", StringValue(satDelay));
   // Satellite link is SLOW
 
   gbnDevices.Add(satellite.Install(borderNodes.Get(ETHERNET), satNodes.Get(0)));
@@ -108,138 +122,138 @@ main (int argc, char *argv[])
   // --------------------------------------------------------------------------
   // Ethernet links
   NodeContainer csmaNodes;
-  csmaNodes.Add (borderNodes.Get (ETHERNET));
-  csmaNodes.Create (nCsma);
+  csmaNodes.Add(borderNodes.Get(ETHERNET));
+  csmaNodes.Create(nCsma);
 
   CsmaHelper csma;
-  csma.SetChannelAttribute ("DataRate", StringValue ("100Mbps"));
-  csma.SetChannelAttribute ("Delay", TimeValue (NanoSeconds (6560)));
+  csma.SetChannelAttribute("DataRate", StringValue(csmaRate));
+  csma.SetChannelAttribute("Delay", StringValue(csmaDelay));
 
   NetDeviceContainer csmaDevices;
-  csmaDevices = csma.Install (csmaNodes);
+  csmaDevices = csma.Install(csmaNodes);
   // --------------------------------------------------------------------------
 
   // --------------------------------------------------------------------------
   // WiFi links
   NodeContainer wifiStaNodes;
-  wifiStaNodes.Create (nWifi);
-  NodeContainer wifiApNode = borderNodes.Get (WIFI);
+  wifiStaNodes.Create(nWifi);
+  NodeContainer wifiApNode = borderNodes.Get(WIFI);
 
-  YansWifiChannelHelper channel = YansWifiChannelHelper::Default ();
-  YansWifiPhyHelper phy = YansWifiPhyHelper::Default ();
-  phy.SetChannel (channel.Create ());
+  YansWifiChannelHelper channel = YansWifiChannelHelper::Default();
+  YansWifiPhyHelper phy = YansWifiPhyHelper::Default();
+  phy.SetChannel(channel.Create());
 
-  WifiHelper wifi = WifiHelper::Default ();
-  wifi.SetRemoteStationManager ("ns3::AarfWifiManager");
+  WifiHelper wifi = WifiHelper::Default();
+  wifi.SetRemoteStationManager("ns3::AarfWifiManager");
 
-  NqosWifiMacHelper mac = NqosWifiMacHelper::Default ();
+  NqosWifiMacHelper mac = NqosWifiMacHelper::Default();
 
-  Ssid ssid = Ssid ("ns-3-ssid");
-  mac.SetType ("ns3::StaWifiMac",
-               "Ssid", SsidValue (ssid),
-               "ActiveProbing", BooleanValue (false));
+  Ssid ssid = Ssid("ns-3-ssid");
+  mac.SetType("ns3::StaWifiMac",
+               "Ssid", SsidValue(ssid),
+               "ActiveProbing", BooleanValue(false));
 
   NetDeviceContainer staDevices;
-  staDevices = wifi.Install (phy, mac, wifiStaNodes);
+  staDevices = wifi.Install(phy, mac, wifiStaNodes);
 
-  mac.SetType ("ns3::ApWifiMac",
-               "Ssid", SsidValue (ssid));
+  mac.SetType("ns3::ApWifiMac",
+               "Ssid", SsidValue(ssid));
 
   // WiFi AP
   NetDeviceContainer apDevices;
-  apDevices = wifi.Install (phy, mac, wifiApNode);
+  apDevices = wifi.Install(phy, mac, wifiApNode);
   // --------------------------------------------------------------------------
 
   // --------------------------------------------------------------------------
   // Make WiFi nodes move
   MobilityHelper mobility;
 
-  mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
-                                 "MinX", DoubleValue (0.0),
-                                 "MinY", DoubleValue (0.0),
-                                 "DeltaX", DoubleValue (5.0),
-                                 "DeltaY", DoubleValue (10.0),
-                                 "GridWidth", UintegerValue (3),
-                                 "LayoutType", StringValue ("RowFirst"));
+  mobility.SetPositionAllocator("ns3::GridPositionAllocator",
+          "MinX", DoubleValue (0.0),
+          "MinY", DoubleValue (0.0),
+          "DeltaX", DoubleValue (5.0),
+          "DeltaY", DoubleValue (10.0),
+          "GridWidth", UintegerValue (3),
+          "LayoutType", StringValue ("RowFirst"));
 
-  mobility.SetMobilityModel ("ns3::RandomWalk2dMobilityModel",
-                             "Bounds", RectangleValue (Rectangle (-50, 50, -50, 50)));
-  mobility.Install (wifiStaNodes);
+  mobility.SetMobilityModel("ns3::RandomWalk2dMobilityModel", "Bounds",
+          RectangleValue(Rectangle(-50, 50, -50, 50)));
+  mobility.Install(wifiStaNodes);
 
-  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
-  mobility.Install (wifiApNode);
+  mobility.SetMobilityModel("ns3::ConstantPositionMobilityModel");
+  mobility.Install(wifiApNode);
   // --------------------------------------------------------------------------
 
   // --------------------------------------------------------------------------
   // Install IP and assign IP addresses
   InternetStackHelper stack;
-  stack.Install (csmaNodes);
-  stack.Install (wifiApNode);
-  stack.Install (wifiStaNodes);
-  stack.Install (gbnNodes);
-  stack.Install (satNodes);
+  stack.Install(csmaNodes);
+  stack.Install(wifiApNode);
+  stack.Install(wifiStaNodes);
+  stack.Install(gbnNodes);
+  stack.Install(satNodes);
   // NOTE: borderNodes are assigned via [csma,wifiAp]Nodes
 
   Ipv4AddressHelper address;
 
-  address.SetBase ("10.1.1.0", "255.255.255.0");
+  address.SetBase("10.1.1.0", "255.255.255.0");
   Ipv4InterfaceContainer gbnInterfaces;
-  gbnInterfaces = address.Assign (gbnDevices);
+  gbnInterfaces = address.Assign(gbnDevices);
 
-  address.SetBase ("10.1.2.0", "255.255.255.0");
+  address.SetBase("10.1.2.0", "255.255.255.0");
   Ipv4InterfaceContainer csmaInterfaces;
-  csmaInterfaces = address.Assign (csmaDevices);
+  csmaInterfaces = address.Assign(csmaDevices);
 
-  address.SetBase ("10.1.3.0", "255.255.255.0");
-  Ipv4InterfaceContainer wifiAddresses = address.Assign (staDevices);
-  address.Assign (apDevices);
+  address.SetBase("10.1.3.0", "255.255.255.0");
+  Ipv4InterfaceContainer wifiAddresses = address.Assign(staDevices);
+  address.Assign(apDevices);
   // --------------------------------------------------------------------------
 
   // --------------------------------------------------------------------------
   // Server
   uint16_t port = 9;
-  OnOffHelper source ("ns3::TcpSocketFactory",
+  OnOffHelper source("ns3::TcpSocketFactory",
           InetSocketAddress(wifiAddresses.GetAddress(nWifi - 1), port));
-  source.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
-  source.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
+  source.SetAttribute("OnTime", StringValue("ns3::ConstantRandomVariable[Constant=1]"));
+  source.SetAttribute("OffTime", StringValue("ns3::ConstantRandomVariable[Constant=0]"));
 
   // Set the amount of data to send in bytes.  Zero is unlimited.
-  source.SetAttribute ("MaxBytes", UintegerValue (maxBytes));
+  source.SetAttribute("MaxBytes", UintegerValue (maxBytes));
 
-  ApplicationContainer sourceApps = source.Install (csmaNodes.Get(nCsma));
-  sourceApps.Start (Seconds (0.0));
-  sourceApps.Stop (Seconds (10.0));
+  ApplicationContainer sourceApps = source.Install(csmaNodes.Get(nCsma));
+  sourceApps.Start(Seconds (0.0));
+  sourceApps.Stop(Seconds (10.0));
   // --------------------------------------------------------------------------
 
   // --------------------------------------------------------------------------
   // Client
-  PacketSinkHelper sink ("ns3::TcpSocketFactory",
-                         InetSocketAddress (Ipv4Address::GetAny (), port));
-  ApplicationContainer sinkApps = sink.Install (wifiStaNodes.Get(nWifi - 1));
-  sinkApps.Start (Seconds (0.0));
-  sinkApps.Stop (Seconds (10.0));
+  PacketSinkHelper sink("ns3::TcpSocketFactory",
+                         InetSocketAddress(Ipv4Address::GetAny(), port));
+  ApplicationContainer sinkApps = sink.Install(wifiStaNodes.Get(nWifi - 1));
+  sinkApps.Start(Seconds(0.0));
+  sinkApps.Stop(Seconds(10.0));
   // --------------------------------------------------------------------------
 
   // Configure routing tables for all nodes
   // NOTE: Commented out an assertion here
-  Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
+  Ipv4GlobalRoutingHelper::PopulateRoutingTables();
   // TODO: May want to use static routing
   // (https://www.nsnam.org/doxygen/static-routing-slash32_8cc_source.html)
 
-  Simulator::Stop (Seconds (10.0));
+  Simulator::Stop(Seconds(10.0));
 
   if (tracing == true)
     {
-      gbn.EnablePcapAll ("third");
-      phy.EnablePcap ("third", apDevices.Get (0));
-      csma.EnablePcap ("third", csmaDevices.Get (0), true);
+      gbn.EnablePcapAll("star");
+      phy.EnablePcap("star", apDevices.Get(0));
+      csma.EnablePcap("star", csmaDevices.Get(0), true);
     }
 
-  Simulator::Run ();
-  Simulator::Destroy ();
+  Simulator::Run();
+  Simulator::Destroy();
 
-  Ptr<PacketSink> sink1 = DynamicCast<PacketSink> (sinkApps.Get (0));
-  std::cout << "Total Bytes Received: " << sink1->GetTotalRx () << std::endl;
+  Ptr<PacketSink> sink1 = DynamicCast<PacketSink>(sinkApps.Get(0));
+  std::cout << "Total Bytes Received: " << sink1->GetTotalRx() << std::endl;
 
   return 0;
 }
