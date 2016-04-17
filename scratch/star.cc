@@ -23,21 +23,6 @@
 #include "ns3/csma-module.h"
 #include "ns3/internet-module.h"
 
-// Default Network Topology
-//
-// Number of wifi or csma nodes can be increased up to 250
-//                          |
-//                 Rank 0   |   Rank 1
-// -------------------------|----------------------------
-//   Wifi 10.1.3.0
-//                 AP
-//  *    *    *    *
-//  |    |    |    |    10.1.1.0
-// n5   n6   n7   n0 -------------- n1   n2   n3   n4
-//                   point-to-point  |    |    |    |
-//                                   ================
-//                                     LAN 10.1.2.0
-
 using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("ThirdScriptExample");
