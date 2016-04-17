@@ -73,6 +73,8 @@ main (int argc, char *argv[])
       LogComponentEnable ("UdpEchoServerApplication", LOG_LEVEL_INFO);
     }
 
+  // --------------------------------------------------------------------------
+  // P2P links
   NodeContainer p2pNodes;
   p2pNodes.Create (2);
 
@@ -82,7 +84,10 @@ main (int argc, char *argv[])
 
   NetDeviceContainer p2pDevices;
   p2pDevices = pointToPoint.Install (p2pNodes);
+  // --------------------------------------------------------------------------
 
+  // --------------------------------------------------------------------------
+  // Ethernet links
   NodeContainer csmaNodes;
   csmaNodes.Add (p2pNodes.Get (1));
   csmaNodes.Create (nCsma);
@@ -93,7 +98,10 @@ main (int argc, char *argv[])
 
   NetDeviceContainer csmaDevices;
   csmaDevices = csma.Install (csmaNodes);
+  // --------------------------------------------------------------------------
 
+  // --------------------------------------------------------------------------
+  // WiFi links
   NodeContainer wifiStaNodes;
   wifiStaNodes.Create (nWifi);
   NodeContainer wifiApNode = p2pNodes.Get (0);
@@ -118,9 +126,13 @@ main (int argc, char *argv[])
   mac.SetType ("ns3::ApWifiMac",
                "Ssid", SsidValue (ssid));
 
+  // WiFi AP
   NetDeviceContainer apDevices;
   apDevices = wifi.Install (phy, mac, wifiApNode);
+  // --------------------------------------------------------------------------
 
+  // --------------------------------------------------------------------------
+  // Make WiFi nodes move
   MobilityHelper mobility;
 
   mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
@@ -137,7 +149,10 @@ main (int argc, char *argv[])
 
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.Install (wifiApNode);
+  // --------------------------------------------------------------------------
 
+  // --------------------------------------------------------------------------
+  // Install IP and assign IP addresses
   InternetStackHelper stack;
   stack.Install (csmaNodes);
   stack.Install (wifiApNode);
@@ -156,7 +171,10 @@ main (int argc, char *argv[])
   address.SetBase ("10.1.3.0", "255.255.255.0");
   address.Assign (staDevices);
   address.Assign (apDevices);
+  // --------------------------------------------------------------------------
 
+  // --------------------------------------------------------------------------
+  // Set up applications
   UdpEchoServerHelper echoServer (9);
 
   ApplicationContainer serverApps = echoServer.Install (csmaNodes.Get (nCsma));
@@ -172,7 +190,9 @@ main (int argc, char *argv[])
     echoClient.Install (wifiStaNodes.Get (nWifi - 1));
   clientApps.Start (Seconds (2.0));
   clientApps.Stop (Seconds (10.0));
+  // --------------------------------------------------------------------------
 
+  // Configure routing tables for all nodes
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
   Simulator::Stop (Seconds (10.0));
@@ -186,5 +206,6 @@ main (int argc, char *argv[])
 
   Simulator::Run ();
   Simulator::Destroy ();
+
   return 0;
 }
