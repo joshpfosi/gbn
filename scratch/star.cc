@@ -30,20 +30,23 @@ NS_LOG_COMPONENT_DEFINE ("ThirdScriptExample");
 int 
 main (int argc, char *argv[])
 {
-  const uint32_t nCsma     = 3;
-  const uint32_t nWifi     = 3;
-  const uint32_t WIFI   = 1;
-  const uint32_t ETHERNET  = 0;
+  const uint32_t nCsma    = 3;
+  const uint32_t nWifi    = 3;
 
-  uint32_t maxBytes        = 0;
-  bool verbose             = true;
-  bool tracing             = false;
+  const uint32_t WIFI     = 1;
+  const uint32_t ETHERNET = 0;
+
+  uint32_t maxBytes = 0;
+  double errorRate  = 0.0;
+  bool verbose      = true;
+  bool tracing      = false;
 
   CommandLine cmd;
   cmd.AddValue ("verbose", "Tell echo applications to log if true", verbose);
   cmd.AddValue ("tracing", "Enable pcap tracing", tracing);
   cmd.AddValue ("maxBytes",
                 "Total number of bytes for application to send", maxBytes);
+  cmd.AddValue("ErrorRate", "Receive error rate (P)", errorRate);
 
   cmd.Parse (argc,argv);
 
@@ -67,6 +70,12 @@ main (int argc, char *argv[])
   PointToPointHelper gbn; // TODO: Should use GBN links
   gbn.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
   gbn.SetChannelAttribute ("Delay", StringValue ("2ms"));
+
+  Ptr<RateErrorModel> rem = CreateObject<RateErrorModel>();
+  rem->SetUnit(ns3::RateErrorModel::ERROR_UNIT_PACKET);
+  rem->SetRate(errorRate);
+
+  gbn.SetDeviceAttribute("ReceiveErrorModel", PointerValue(rem));
 
   NetDeviceContainer gbnDevices;
 
