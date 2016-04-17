@@ -198,8 +198,10 @@ main (int argc, char *argv[])
   // --------------------------------------------------------------------------
   // Server
   uint16_t port = 9;
-  BulkSendHelper source ("ns3::TcpSocketFactory",
+  OnOffHelper source ("ns3::TcpSocketFactory",
           InetSocketAddress(wifiAddresses.GetAddress(nWifi - 1), port));
+  source.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
+  source.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
 
   // Set the amount of data to send in bytes.  Zero is unlimited.
   source.SetAttribute ("MaxBytes", UintegerValue (maxBytes));
