@@ -93,16 +93,16 @@ GbnReceiver::HandleRead (Ptr<NetDevice> dev, Ptr<const Packet> p,
 {
     NS_LOG_FUNCTION (this);
 
-    // NS_LOG_DEBUG("At time " << Simulator::Now ().GetSeconds () << "s receiver"
-    //         " received " << p->GetSize () << " bytes mac " << mac);
+    NS_LOG_DEBUG("At time " << Simulator::Now ().GetSeconds () << "s receiver"
+            " received " << p->GetSize () << " bytes mac " << mac);
 
     // NS_LOG_DEBUG("At time " << Simulator::Now ().GetSeconds () << "s receiver"
     //    " sent ACK " << seq_no << " " << p->GetSize() << " bytes to " << mac);
 
-    NS_LOG_INFO("Received packet at "
-            << Simulator::Now().GetSeconds() << " ("
-            << (Simulator::Now().GetSeconds() - m_last_rx)
-            << " after the last packet)");
+    // NS_LOG_INFO("Received packet at "
+    //         << Simulator::Now().GetSeconds() << " ("
+    //         << (Simulator::Now().GetSeconds() - m_last_rx)
+    //         << " after the last packet)");
 
     m_last_rx = Simulator::Now().GetSeconds();
     m_bytes_rx += p->GetSize() * 8;

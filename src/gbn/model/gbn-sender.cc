@@ -138,8 +138,8 @@ GbnSender::Send (void)
 
   ++m_sent;
 
-  NS_LOG_INFO("Sent packet " << m_sent << " at "
-          << Simulator::Now().GetSeconds());
+  // NS_LOG_INFO("Sent packet " << m_sent << " at "
+  //         << Simulator::Now().GetSeconds());
 
   ScheduleTransmit (m_interval);
 }

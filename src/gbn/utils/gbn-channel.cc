@@ -72,6 +72,7 @@ GbnChannel::Send (Ptr<Packet> p, uint16_t protocol,
               continue;
             }
         }
+      NS_LOG_DEBUG("[CHANNEL] Scheduling a Receive at " << Simulator::Now().GetSeconds() + m_delay.GetSeconds());
       Simulator::ScheduleWithContext (tmp->GetNode ()->GetId (), m_delay,
                                       &GbnNetDevice::Receive, tmp, p->Copy (), protocol, to, from);
     }

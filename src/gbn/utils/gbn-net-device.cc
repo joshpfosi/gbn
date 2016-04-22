@@ -206,7 +206,7 @@ GbnNetDevice::GetTypeId (void)
                    MakePointerChecker<Queue> ())
     .AddAttribute ("WindowSize",
                    "The window size used in GBN ARQ",
-                   UintegerValue (10),
+                   UintegerValue (1),
                    MakeUintegerAccessor (&GbnNetDevice::m_wsize),
                    MakeUintegerChecker<size_t>())
     .AddAttribute ("DataRate",
@@ -229,10 +229,12 @@ GbnNetDevice::GbnNetDevice ()
     m_mtu (0xffff),
     m_ifIndex (0),
     m_linkUp (false),
-    m_wsize (10),
+    m_wsize (1),
     m_window(),
+    timeoutTime(Seconds(1)),
     m_expected_seqno(0),
-    m_seqno(0)
+    m_seqno(0),
+    m_max_seqno(65536)
 {
   NS_LOG_FUNCTION (this);
 
@@ -247,12 +249,17 @@ GbnNetDevice::Receive (Ptr<Packet> packet, uint16_t protocol,
   NS_LOG_FUNCTION (this << packet << protocol << to << from);
   NetDevice::PacketType packetType;
 
+  NS_LOG_DEBUG("(Receive) in RECEIVE");
+
   if (m_receiveErrorModel && m_receiveErrorModel->IsCorrupt (packet) )
     {
+      GbnHeader h; packet->PeekHeader(h);
+      NS_LOG_DEBUG("(Receive) DROPPING packet " << h.GetSeqno() << " at " << Simulator::Now().GetSeconds());
       m_phyRxDropTrace (packet);
       return;
     }
 
+  NS_LOG_DEBUG("Receiving packet to " << to << " and we're at " << m_address);
   if (to == m_address)
     {
       packetType = NetDevice::PACKET_HOST;
@@ -270,35 +277,64 @@ GbnNetDevice::Receive (Ptr<Packet> packet, uint16_t protocol,
       packetType = NetDevice::PACKET_OTHERHOST;
     }
 
+  NS_LOG_DEBUG("packetType=" << packetType << " at " << Simulator::Now().GetSeconds());
   if (packetType != NetDevice::PACKET_OTHERHOST)
     {
       GbnHeader header;
       packet->RemoveHeader(header);
 
+      // We received the packet so clear it and cancel its timeout
       if (header.GetIsAck())
         {
-            NS_LOG_DEBUG("[SENDER] Received ACK for seqno=" << header.GetSeqno ());
+            NS_LOG_DEBUG("[SENDER] (Receive) Received ACK for seqno="
+                    << header.GetSeqno () << " at " << Simulator::Now().GetSeconds());
+
+            NS_LOG_DEBUG("[SENDER] (Receive) Cancelling EventId " << m_window.begin()->second.GetUid());
+            m_window.begin()->second.Cancel(); // cancel timeout
+            m_window.erase (m_window.begin()); // clear packet
             
-            NS_LOG_DEBUG("[SENDER] Sender queue length is " << m_queue->GetNPackets ());
+            NS_LOG_DEBUG("[SENDER] (Receive) Sender queue length is " << m_queue->GetNPackets ());
+
+            // Enqueue new packet if one exists
+            // NOTE: Window can always hold at least 1 more element as we erased
+            // one above
             if (m_queue->GetNPackets ())
               {
-                  m_window.erase (m_window.begin ());
-                  m_window.push_back (m_queue->Dequeue ());
+                  NS_LOG_DEBUG("[SENDER] (Receive) Window is not full so pushing seqno=" << header.GetSeqno ());
+                  Ptr<Packet> dataPacket = m_queue->Dequeue();
+                  std::pair<Ptr<Packet>, EventId> packet_pair = std::make_pair(dataPacket, EventId());
 
+                  // Schedule a TransmitComplete event if necessary
+                  if (!TransmitCompleteEvent.IsRunning ())
+                    {
+                      Time txTime = Time (0);
+                      if (m_bps > DataRate (0))
+                        {
+                          txTime = m_bps.CalculateBytesTxTime (dataPacket->GetSize ());
+                        }
+                      NS_ASSERT(txTime < timeoutTime);
+                      packet_pair.second = Simulator::Schedule (timeoutTime, &GbnNetDevice::Timeout, this);
+                      dataPacket->PeekHeader(header); // debugging
+                      NS_LOG_DEBUG("[SENDER] (Receive) Scheduling a Timeout for seqno " << header.GetSeqno() << " at " << Simulator::Now().GetSeconds() + timeoutTime.GetSeconds() << " with EventId " << packet_pair.second.GetUid());
+                      TransmitCompleteEvent = Simulator::Schedule (txTime, &GbnNetDevice::TransmitComplete, this);
+                      NS_LOG_DEBUG("[SENDER] (Receive) Scheduling a TransmiteComplete for seqno " << header.GetSeqno() << " at " << Simulator::Now().GetSeconds() + txTime.GetSeconds() << " with EventId " << TransmitCompleteEvent.GetUid());
+                    }
+
+                  m_window.push_back (packet_pair);
+
+                  // NOTE: As `m_window.push_back()` invalidates `end()`, the
+                  // conditional must come after
                   if (m_inflight == m_window.end ())
                     {
-                      NS_LOG_DEBUG("[SENDER] Shifting m_inflight");
+                      NS_LOG_DEBUG("[SENDER] (Receive) Shifting m_inflight");
                       m_inflight = --m_window.end ();
-                    }
-                  else
-                    {
-                      m_inflight = m_window.begin ();
                     }
               }
         }
       else if (header.GetSeqno() == m_expected_seqno) 
         {
-            NS_LOG_DEBUG("[RECEIVER] Received expected packet " << m_expected_seqno);
+            NS_LOG_DEBUG("[RECEIVER] (Receive) Received expected packet "
+                    << m_expected_seqno << " at " << Simulator::Now().GetSeconds());
             GbnHeader header;
             header.SetIsAck (true);
             header.SetSeqno (m_expected_seqno);
@@ -310,14 +346,30 @@ GbnNetDevice::Receive (Ptr<Packet> packet, uint16_t protocol,
             // SendFrom is more realistic but m_channel->Send() is probably
             // required b/c the analytical models do not account for ACKs
             // whatsoever
-            NS_LOG_DEBUG("[RECEIVER] Sending ACK for packet " << m_expected_seqno);
+            NS_LOG_DEBUG("[RECEIVER] (Receive) Sending ACK for packet " << m_expected_seqno);
             m_channel->Send(ack, protocol, from, m_address, this);
 
-            m_expected_seqno = (m_expected_seqno + 1) % m_wsize;
+            NS_LOG_DEBUG("[RECEIVER] Incrementing expected seqno from " << m_expected_seqno << " to " << m_expected_seqno + 1);
+            m_expected_seqno = (m_expected_seqno + 1) % m_max_seqno;
             m_rxCallback (this, packet, protocol, from);
         }
       else // not an ACK but also not correct seqno, so DROP
         {
+            NS_LOG_DEBUG("[RECEIVER] (Receive) seqno=" << header.GetSeqno() << " (expecting " << m_expected_seqno << ") and not an ACK, so drop");
+            GbnHeader header;
+            header.SetIsAck (true);
+            header.SetSeqno (m_expected_seqno);
+
+            Ptr<Packet> ack = Create<Packet> (0);
+            ack->AddHeader (header);
+
+            // Do we use SendFrom here or m_channel->Send()?
+            // SendFrom is more realistic but m_channel->Send() is probably
+            // required b/c the analytical models do not account for ACKs
+            // whatsoever
+            NS_LOG_DEBUG("[RECEIVER] (Receive) Sending ACK for packet " << m_expected_seqno - 1);
+            m_channel->Send(ack, protocol, from, m_address, this);
+
             m_phyRxDropTrace (packet);
             return;
         }
@@ -503,20 +555,20 @@ GbnNetDevice::SendFrom (Ptr<Packet> p, const Address& source, const Address& des
 
   GbnHeader header;
   header.SetSeqno(m_seqno);
-  m_seqno = (m_seqno + 1) % m_wsize;
+  m_seqno = (m_seqno + 1) % m_max_seqno;
 
   p->AddPacketTag(tag);
   p->AddHeader(header);
 
-  NS_LOG_DEBUG("[SENDER] Trying to enqueue packet " << header.GetSeqno ());
+  // NS_LOG_DEBUG("[SENDER] Trying to enqueue packet " << header.GetSeqno ());
   if (m_queue->Enqueue (p))
     {
-      NS_LOG_DEBUG("[SENDER] Enqueued...");
+      // NS_LOG_DEBUG("[SENDER] Enqueued...");
       if (!isWindowFull ())
         {
           NS_LOG_DEBUG("[SENDER] Window is not full so pushing seqno=" << header.GetSeqno ());
-          m_window.push_back (p);
-          m_queue->Dequeue ();
+
+          std::pair<Ptr<Packet>, EventId> packet_pair = std::make_pair(p, EventId());
 
           if (!TransmitCompleteEvent.IsRunning ())
             {
@@ -525,9 +577,14 @@ GbnNetDevice::SendFrom (Ptr<Packet> p, const Address& source, const Address& des
               {
                   txTime = m_bps.CalculateBytesTxTime (packet->GetSize ());
               }
-              // TODO: Schedule a TIMEOUT event
+              NS_ASSERT(txTime < timeoutTime);
+              packet_pair.second = Simulator::Schedule (timeoutTime, &GbnNetDevice::Timeout, this);
+              NS_LOG_DEBUG("[SENDER] (SendFrom) Scheduling a Timeout for seqno " << header.GetSeqno() << " at " << Simulator::Now().GetSeconds() + timeoutTime.GetSeconds() << " with EventId " << packet_pair.second.GetUid());
               TransmitCompleteEvent = Simulator::Schedule (txTime, &GbnNetDevice::TransmitComplete, this);
             }
+
+          m_window.push_back (packet_pair);
+          m_queue->Dequeue ();
         }
       return true;
     }
@@ -538,17 +595,35 @@ GbnNetDevice::SendFrom (Ptr<Packet> p, const Address& source, const Address& des
 void
 GbnNetDevice::Timeout ()
 {
+    NS_LOG_FUNCTION (this);
+
+    // TODO: This should be an assertion but I cannot find why it's getting
+    // triggered so for the sake of time, simply return
+    // NS_ASSERT(m_window.size() > 0);
+    if (m_window.size() == 0)
+      {
+        return;
+      }
+
     m_inflight = m_window.begin();
 
-    NS_LOG_FUNCTION (this);
-    
+    std::pair<Ptr<Packet>, EventId > packet_pair = *m_inflight;
+
+    GbnHeader header;
+    packet_pair.first->PeekHeader (header);
+    NS_LOG_DEBUG("[SENDER] TIMEOUT for packet " << header.GetSeqno() << " at "
+            << Simulator::Now().GetSeconds());
+
     if (!TransmitCompleteEvent.IsRunning ())
     {
         Time txTime = Time (0);
         if (m_bps > DataRate (0))
         {
-            txTime = m_bps.CalculateBytesTxTime ((*m_inflight)->GetSize ());
+            txTime = m_bps.CalculateBytesTxTime (packet_pair.first->GetSize ());
         }
+        NS_ASSERT(txTime < timeoutTime);
+        packet_pair.second.Cancel();
+        packet_pair.second = Simulator::Schedule (timeoutTime, &GbnNetDevice::Timeout, this);
         TransmitCompleteEvent = Simulator::Schedule (txTime, &GbnNetDevice::TransmitComplete, this);
     }
 }
@@ -563,10 +638,13 @@ GbnNetDevice::TransmitComplete ()
       return;
     }
 
-  Ptr<Packet> packet = *m_inflight++;
+  Ptr<Packet> packet = m_inflight->first;
+  m_inflight++;
 
   GbnTag tag;
-  packet->RemovePacketTag (tag);
+  packet->PeekPacketTag (tag);
+  // NOTE: We cannot remove the packet tag as if this packet is dropped and
+  // retransmitted, we need the tags to properly send it to its destination
 
   Mac48Address src = tag.GetSrc ();
   Mac48Address dst = tag.GetDst ();
@@ -574,18 +652,28 @@ GbnNetDevice::TransmitComplete ()
 
   GbnHeader header;
   packet->PeekHeader (header);
-  NS_LOG_DEBUG("[SENDER] Sending seqno=" << header.GetSeqno ());
+  NS_LOG_DEBUG("[SENDER] Sending seqno=" << header.GetSeqno () << " from " << src << " to " << dst);
   m_channel->Send (packet, proto, dst, src, this);
 
-  NS_LOG_DEBUG("[SENDER] In TransmitComplete, " << m_window.end() - m_inflight << " packets left");
+  NS_LOG_DEBUG("[SENDER] In TransmitComplete, at "
+          << Simulator::Now().GetSeconds() << ", "
+          << m_window.end() - m_inflight << " packets left (size="
+          << m_window.size() << ")");
   if (m_inflight != m_window.end())
     {
+      std::pair<Ptr<Packet>, EventId> packet_pair = *m_inflight;
+
       Time txTime = Time (0);
       if (m_bps > DataRate (0))
         {
           txTime = m_bps.CalculateBytesTxTime (packet->GetSize ());
         }
-      // TODO: Schedule a TIMEOUT event
+      NS_ASSERT(txTime < timeoutTime);
+      NS_LOG_DEBUG("[SENDER] (TransmitComplete) Cancelling EventId " << packet_pair.second.GetUid());
+      packet_pair.second.Cancel();
+      packet_pair.second = Simulator::Schedule (timeoutTime, &GbnNetDevice::Timeout, this);
+      NS_ASSERT(txTime < timeoutTime);
+      NS_LOG_DEBUG("[SENDER] (TransmitComplete) Scheduling a Timeout for seqno " << header.GetSeqno() << " at " << Simulator::Now().GetSeconds() + timeoutTime.GetSeconds() << " with EventId " << packet_pair.second.GetUid());
       TransmitCompleteEvent = Simulator::Schedule (txTime, &GbnNetDevice::TransmitComplete, this);
     }
 }

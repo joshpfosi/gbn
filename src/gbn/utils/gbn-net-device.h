@@ -39,6 +39,9 @@ class GbnChannel;
 class Node;
 class ErrorModel;
 
+// Vector of pairs to store a packet and its associated timeout event
+typedef std::vector< std::pair< Ptr<Packet>, EventId > > Window;
+
 /**
  * \ingroup netdevice
  *
@@ -179,13 +182,16 @@ private:
 
   // GBN window management
   size_t m_wsize;
-  std::vector< Ptr<Packet> > m_window;
+  Window m_window;
 
   // Points to next packet to be sent in window
-  std::vector< Ptr<Packet> >::iterator m_inflight;
+  Window::iterator m_inflight;
+
+  Time timeoutTime;
 
   size_t m_expected_seqno;
   size_t m_seqno;
+  size_t m_max_seqno;
 
   Ptr<Queue> m_queue; //!< The Queue for outgoing packets.
   DataRate m_bps; //!< The device nominal Data rate. Zero means infinite
