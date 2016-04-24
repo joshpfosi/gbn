@@ -596,13 +596,7 @@ GbnNetDevice::Timeout ()
 {
     NS_LOG_FUNCTION (this);
 
-    // TODO: This should be an assertion but I cannot find why it's getting
-    // triggered so for the sake of time, simply return
-    // NS_ASSERT(m_window.size() > 0);
-    if (m_window.size() == 0)
-      {
-        return;
-      }
+    NS_ASSERT(m_window.size() > 0);
 
     m_inflight = m_window.begin();
 
@@ -664,6 +658,7 @@ GbnNetDevice::TransmitComplete ()
           txTime = m_bps.CalculateBytesTxTime (packet->GetSize ());
         }
       NS_ASSERT(txTime < timeoutTime);
+
       // Erase any original timeout event before scheduling a new one
       m_inflight->second.Cancel();
 
