@@ -664,6 +664,9 @@ GbnNetDevice::TransmitComplete ()
           txTime = m_bps.CalculateBytesTxTime (packet->GetSize ());
         }
       NS_ASSERT(txTime < timeoutTime);
+      // Erase any original timeout event before scheduling a new one
+      m_inflight->second.Cancel();
+
       m_inflight->second = Simulator::Schedule (timeoutTime, &GbnNetDevice::Timeout, this);
       m_inflight->first->PeekHeader(header); // debugging
       NS_LOG_DEBUG("[SENDER] (TransmitComplete) Scheduling a Timeout for seqno " << header.GetSeqno() << " at " << Simulator::Now().GetSeconds() + timeoutTime.GetSeconds() << " with EventId " << m_inflight->second.GetUid());
