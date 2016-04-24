@@ -89,17 +89,8 @@ GbnSender::StartApplication (void)
   if (m_dev == 0)
     {
         m_dev = GetNode()->GetDevice(0);
-
-        DataRateValue rate;
-        m_dev->GetAttribute("DataRate", rate);
-
-        uint64_t data_rate = rate.Get().GetBitRate();
-        (void)data_rate;
-        m_interval = Seconds(0.001); //Seconds((double) m_size / (double) data_rate);
-        // L / R => PacketSize / DataRate
+        m_interval = Seconds(0.001);
     }
-
-  m_dev->SetReceiveCallback(MakeCallback(&GbnSender::HandleRead, this));
 
   ScheduleTransmit(Seconds(0.));
 }
@@ -136,18 +127,6 @@ GbnSender::Send (void)
 
   ++m_sent;
   ScheduleTransmit (m_interval);
-}
-
-bool 
-GbnSender::HandleRead (Ptr<NetDevice> dev, Ptr<const Packet> p,
-        uint16_t protocol, const Address &mac)
-{
-    NS_LOG_FUNCTION (this << dev << p << protocol << mac);
-
-    uint16_t ack_no;
-    p->CopyData((uint8_t *)&ack_no, sizeof(ack_no));
-
-    return true;
 }
 
 } // Namespace ns3

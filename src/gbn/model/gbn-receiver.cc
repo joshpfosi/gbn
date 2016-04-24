@@ -56,7 +56,8 @@ GbnReceiver::GbnReceiver () :
 GbnReceiver::~GbnReceiver()
 {
   NS_LOG_FUNCTION (this);
-  NS_LOG_INFO("THROUGHPUT "
+  NS_LOG_DEBUG("RECEIVED " << m_bytes_rx << " bytes");
+  NS_LOG_DEBUG("THROUGHPUT "
           << ((m_last_rx) ? m_bytes_rx / (m_last_rx - 2) : 0) << " bps");
 }
 
@@ -93,7 +94,7 @@ GbnReceiver::HandleRead (Ptr<NetDevice> dev, Ptr<const Packet> p,
     NS_LOG_FUNCTION (this);
 
     m_last_rx = Simulator::Now().GetSeconds();
-    m_bytes_rx += p->GetSize() * 8;
+    m_bytes_rx += p->GetSize();
 
     return true;
 }
