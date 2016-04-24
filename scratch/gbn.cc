@@ -16,10 +16,7 @@ main (int argc, char *argv[])
   Time::SetResolution (Time::NS);
   LogComponentEnable("GbnSenderApplication", LOG_LEVEL_INFO);
   LogComponentEnable("GbnReceiverApplication", LOG_LEVEL_INFO);
-  LogComponentEnable("GbnNetDevice", LOG_LEVEL_DEBUG);
-  LogComponentEnable("Queue", LOG_LEVEL_INFO);
-  LogComponentEnable("GbnChannel", LOG_LEVEL_INFO);
-  LogComponentEnable("DataRate", LOG_LEVEL_INFO);
+  // LogComponentEnable("GbnNetDevice", LOG_LEVEL_DEBUG);
 
   NodeContainer nodes;
   nodes.Create(2);
@@ -52,7 +49,7 @@ main (int argc, char *argv[])
 
   ApplicationContainer receiverApps = rcvr.Install (nodes.Get (1));
   receiverApps.Start(Seconds (1.0));
-  receiverApps.Stop(Seconds (1000));
+  // Receive until the simulation ends -- no receiverApps.Stop()
 
   GbnSenderHelper sender(rcvrAddr);
   // sender.SetAttribute ("WindowSize", UintegerValue (10));

@@ -131,16 +131,10 @@ GbnSender::Send (void)
   // call to the trace sinks before the packet is actually sent,
   // so that tags added to the packet can be sent as well
   m_txTrace (p);
-  NS_LOG_DEBUG("At time " << Simulator::Now ().GetSeconds () <<
-          "s sender sent " << p->GetSize () << " bytes mac " << m_rcvr_addr);
   m_dev->Send(p, m_rcvr_addr, 0x0800); // IPv4
   // disregard return value -- use ACKs to determine success
 
   ++m_sent;
-
-  // NS_LOG_INFO("Sent packet " << m_sent << " at "
-  //         << Simulator::Now().GetSeconds());
-
   ScheduleTransmit (m_interval);
 }
 
@@ -153,8 +147,6 @@ GbnSender::HandleRead (Ptr<NetDevice> dev, Ptr<const Packet> p,
     uint16_t ack_no;
     p->CopyData((uint8_t *)&ack_no, sizeof(ack_no));
 
-    // NS_LOG_DEBUG("At time " << Simulator::Now ().GetSeconds () <<
-    //         "s sender received " << ack_no << " " << p->GetSize () << " bytes mac " << mac);
     return true;
 }
 

@@ -56,6 +56,8 @@ GbnReceiver::GbnReceiver () :
 GbnReceiver::~GbnReceiver()
 {
   NS_LOG_FUNCTION (this);
+  NS_LOG_INFO("THROUGHPUT "
+          << ((m_last_rx) ? m_bytes_rx / (m_last_rx - 2) : 0) << " bps");
 }
 
 void
@@ -82,9 +84,6 @@ void
 GbnReceiver::StopApplication (void)
 {
     NS_LOG_FUNCTION (this);
-    NS_LOG_INFO("m_last_rx - 2 " << m_last_rx - 2<< " m_bytes_rx " << m_bytes_rx);
-    NS_LOG_INFO("THROUGHPUT "
-            << ((m_last_rx) ? m_bytes_rx / (m_last_rx - 2): 0) << " bps");
 }
 
 bool 
@@ -92,17 +91,6 @@ GbnReceiver::HandleRead (Ptr<NetDevice> dev, Ptr<const Packet> p,
         uint16_t protocol, const Address &mac)
 {
     NS_LOG_FUNCTION (this);
-
-    NS_LOG_DEBUG("At time " << Simulator::Now ().GetSeconds () << "s receiver"
-            " received " << p->GetSize () << " bytes mac " << mac);
-
-    // NS_LOG_DEBUG("At time " << Simulator::Now ().GetSeconds () << "s receiver"
-    //    " sent ACK " << seq_no << " " << p->GetSize() << " bytes to " << mac);
-
-    // NS_LOG_INFO("Received packet at "
-    //         << Simulator::Now().GetSeconds() << " ("
-    //         << (Simulator::Now().GetSeconds() - m_last_rx)
-    //         << " after the last packet)");
 
     m_last_rx = Simulator::Now().GetSeconds();
     m_bytes_rx += p->GetSize() * 8;
