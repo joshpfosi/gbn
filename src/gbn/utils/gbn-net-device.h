@@ -40,7 +40,8 @@ class Node;
 class ErrorModel;
 
 // Vector of pairs to store a packet and its associated timeout event
-typedef std::vector< std::pair< Ptr<Packet>, EventId > > Window;
+typedef std::pair<Ptr<Packet>, EventId> PacketPair;
+typedef std::vector<PacketPair> Window;
 
 /**
  * \ingroup netdevice
