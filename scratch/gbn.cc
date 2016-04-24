@@ -16,7 +16,6 @@ main (int argc, char *argv[])
   Time::SetResolution (Time::NS);
   LogComponentEnable("GbnSenderApplication", LOG_LEVEL_INFO);
   LogComponentEnable("GbnReceiverApplication", LOG_LEVEL_INFO);
-  // LogComponentEnable("GbnNetDevice", LOG_LEVEL_DEBUG);
 
   NodeContainer nodes;
   nodes.Create(2);
