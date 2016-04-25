@@ -14,8 +14,11 @@ int
 main (int argc, char *argv[])
 {
   Time::SetResolution (Time::NS);
-  LogComponentEnable("GbnSenderApplication", LOG_LEVEL_INFO);
+  // LogComponentEnable("GbnSenderApplication", LOG_LEVEL_INFO);
   LogComponentEnable("GbnReceiverApplication", LOG_LEVEL_INFO);
+  // LogComponentEnable("GbnNetDevice", LOG_LEVEL_INFO);
+
+  Config::SetDefault ("ns3::DropTailQueue::MaxPackets", UintegerValue (4294967295));
 
   NodeContainer nodes;
   nodes.Create(2);
@@ -50,14 +53,14 @@ main (int argc, char *argv[])
 
   ApplicationContainer receiverApps = rcvr.Install (nodes.Get (1));
   receiverApps.Start(Seconds (1.0));
-  // Receive until the simulation ends -- no receiverApps.Stop()
+  receiverApps.Stop(Seconds (10000000));
 
   GbnSenderHelper sender(rcvrAddr);
   // sender.SetAttribute ("WindowSize", UintegerValue (windowSize));
 
   ApplicationContainer senderApps = sender.Install (nodes.Get (0));
   senderApps.Start (Seconds (2.0));
-  senderApps.Stop (Seconds (2.05));
+  senderApps.Stop (Seconds (10));
 
   Simulator::Run ();
   Simulator::Destroy ();

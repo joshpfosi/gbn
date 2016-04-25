@@ -56,9 +56,6 @@ GbnReceiver::GbnReceiver () :
 GbnReceiver::~GbnReceiver()
 {
   NS_LOG_FUNCTION (this);
-  NS_LOG_DEBUG("RECEIVED " << m_bytes_rx << " bytes");
-  NS_LOG_DEBUG("THROUGHPUT "
-          << ((m_last_rx) ? m_bytes_rx / (m_last_rx - 2) : 0) << " bps");
 }
 
 void
@@ -85,6 +82,9 @@ void
 GbnReceiver::StopApplication (void)
 {
     NS_LOG_FUNCTION (this);
+    NS_LOG_DEBUG("RECEIVED " << m_bytes_rx << " bytes");
+    NS_LOG_DEBUG("THROUGHPUT "
+            << ((m_last_rx) ? m_bytes_rx * 8 / (m_last_rx - 2) : 0) << " bps");
 }
 
 bool 

@@ -123,6 +123,7 @@ GbnSender::Send (void)
   // so that tags added to the packet can be sent as well
   m_txTrace (p);
   m_dev->Send(p, m_rcvr_addr, 0x0800); // IPv4
+  NS_LOG_INFO("Sending packet at " << Simulator::Now().GetSeconds());
   // disregard return value -- use ACKs to determine success
 
   ++m_sent;
