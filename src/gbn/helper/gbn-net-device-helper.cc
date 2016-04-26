@@ -108,6 +108,32 @@ GbnNetDeviceHelper::Install (const NodeContainer &c, Ptr<GbnChannel> channel) co
   return devs;
 }
 
+NetDeviceContainer 
+GbnNetDeviceHelper::Install (Ptr<Node> a, Ptr<Node> b)
+{
+  NetDeviceContainer container;
+
+  Ptr<GbnNetDevice> devA = m_deviceFactory.Create<GbnNetDevice> ();
+  devA->SetAddress (Mac48Address::Allocate ());
+  a->AddDevice (devA);
+  Ptr<Queue> queueA = m_queueFactory.Create<Queue> ();
+  devA->SetQueue (queueA);
+  Ptr<GbnNetDevice> devB = m_deviceFactory.Create<GbnNetDevice> ();
+  devB->SetAddress (Mac48Address::Allocate ());
+  b->AddDevice (devB);
+  Ptr<Queue> queueB = m_queueFactory.Create<Queue> ();
+  devB->SetQueue (queueB);
+
+  Ptr<GbnChannel> channel = m_channelFactory.Create<GbnChannel> ();
+
+  devA->SetChannel (channel);
+  devB->SetChannel (channel);
+  container.Add (devA);
+  container.Add (devB);
+
+  return container;
+}
+
 Ptr<NetDevice>
 GbnNetDeviceHelper::InstallPriv (Ptr<Node> node, Ptr<GbnChannel> channel) const
 {
@@ -121,5 +147,38 @@ GbnNetDeviceHelper::InstallPriv (Ptr<Node> node, Ptr<GbnChannel> channel) const
   NS_ASSERT_MSG (!m_pointToPointMode || (channel->GetNDevices () <= 2), "Device set to PointToPoint and more than 2 devices on the channel.");
   return device;
 }
+
+void 
+GbnNetDeviceHelper::EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bool promiscuous, bool explicitFilename)
+{
+  //
+  // All of the Pcap enable functions vector through here including the ones
+  // that are wandering through all of devices on perhaps all of the nodes in
+  // the system.  We can only deal with devices of type GbnNetDevice.
+  //
+  Ptr<GbnNetDevice> device = nd->GetObject<GbnNetDevice> ();
+  if (device == 0)
+    {
+      NS_LOG_INFO ("GbnHelper::EnablePcapInternal(): Device " << device << " not of type ns3::GbnNetDevice");
+      return;
+    }
+
+  PcapHelper pcapHelper;
+
+  std::string filename;
+  if (explicitFilename)
+    {
+      filename = prefix;
+    }
+  else
+    {
+      filename = pcapHelper.GetFilenameFromDevice (prefix, device);
+    }
+
+  Ptr<PcapFileWrapper> file = pcapHelper.CreateFile (filename, std::ios::out, 
+                                                     PcapHelper::DLT_PPP);
+  pcapHelper.HookDefaultSink<GbnNetDevice> (device, "PromiscSniffer", file);
+}
+
 
 } // namespace ns3

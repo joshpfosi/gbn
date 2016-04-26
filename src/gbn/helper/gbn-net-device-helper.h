@@ -16,7 +16,7 @@ namespace ns3 {
 /**
  * \brief build a set of GbnNetDevice objects
  */
-class GbnNetDeviceHelper
+class GbnNetDeviceHelper : public PcapHelperForDevice
 {
 public:
   /**
@@ -149,7 +149,30 @@ public:
    */
   NetDeviceContainer Install (const NodeContainer &c, Ptr<GbnChannel> channel) const;
 
+  /**
+   * \param a first node
+   * \param b second node
+   * \return a NetDeviceContainer for nodes
+   *
+   * Saves you from having to construct a temporary NodeContainer. 
+   * Also, if MPI is enabled, for distributed simulations, 
+   * appropriate remote point-to-point channels are created.
+   */
+  NetDeviceContainer Install (Ptr<Node> a, Ptr<Node> b);
+
 private:
+  /**
+   * \brief Enable pcap output the indicated net device.
+   *
+   * NetDevice-specific implementation mechanism for hooking the trace and
+   * writing to the trace file.
+   *
+   * \param prefix Filename prefix to use for pcap files.
+   * \param nd Net device for which you want to enable tracing.
+   * \param promiscuous If true capture all possible packets available at the device.
+   * \param explicitFilename Treat the prefix as an explicit filename if true
+   */
+  virtual void EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bool promiscuous, bool explicitFilename);
   /**
    * This method creates an ns3::GbnNetDevice with the attributes configured by
    * GbbnNetDeviceHelper::SetDeviceAttribute and then adds the device to the node and

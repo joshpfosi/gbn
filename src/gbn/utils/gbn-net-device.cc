@@ -206,7 +206,7 @@ GbnNetDevice::GetTypeId (void)
                    MakePointerChecker<Queue> ())
     .AddAttribute ("WindowSize",
                    "The window size used in GBN ARQ",
-                   UintegerValue (200),
+                   UintegerValue (20),
                    MakeUintegerAccessor (&GbnNetDevice::m_wsize),
                    MakeUintegerChecker<size_t>())
     .AddAttribute ("DataRate",
@@ -229,7 +229,7 @@ GbnNetDevice::GbnNetDevice ()
     m_mtu (0xffff),
     m_ifIndex (0),
     m_linkUp (false),
-    m_wsize (200),
+    m_wsize (20),
     m_window(),
     m_expected_seqno(0),
     m_seqno(0),
@@ -249,7 +249,7 @@ GbnNetDevice::Receive (Ptr<Packet> packet, uint16_t protocol,
     NetDevice::PacketType packetType;
 
     GbnHeader header;
-    packet->RemoveHeader(header);
+    packet->PeekHeader(header);
 
     NS_LOG_DEBUG("[RECEIVE] (Receiver) Received packet " << header.GetSeqno()
             << " at " << Simulator::Now().GetSeconds()
@@ -289,6 +289,9 @@ GbnNetDevice::Receive (Ptr<Packet> packet, uint16_t protocol,
             NS_LOG_DEBUG("[RECEIVE] (Sender) Received ACK for seqno="
                     << header.GetSeqno() << " at "
                     << Simulator::Now().GetSeconds());
+
+            NS_ASSERT(!isWindowEmpty());
+
             GbnHeader expected_header;
             m_window.begin()->first->PeekHeader(expected_header);
 
@@ -377,6 +380,9 @@ GbnNetDevice::Receive (Ptr<Packet> packet, uint16_t protocol,
                         << Simulator::Now().GetSeconds());
                 ackHeader.SetSeqno (m_expected_seqno);
                 m_expected_seqno = (m_expected_seqno + 1) % m_max_seqno;
+
+                // We're sending the packet up so trim header
+                packet->RemoveHeader(header);
                 m_rxCallback (this, packet, protocol, from);
             }
             else // not an ACK but also not correct seqno, so DROP

@@ -4,24 +4,28 @@
 #include "ns3/network-module.h"
 #include "ns3/internet-module.h"
 #include "ns3/applications-module.h"
+#include "ns3/point-to-point-module.h"
 #include "ns3/gbn-module.h"
 
 using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("GBN Throughput");
 
+double lastRx;
+
+void RxTracer(Ptr< const Packet > packet, const Address &address)
+{
+    lastRx = Simulator::Now().GetSeconds();
+}
+
 int
 main (int argc, char *argv[])
 {
   Time::SetResolution (Time::NS);
-  // LogComponentEnable("GbnSenderApplication", LOG_LEVEL_INFO);
-  LogComponentEnable("GbnReceiverApplication", LOG_LEVEL_INFO);
-  // LogComponentEnable("GbnNetDevice", LOG_LEVEL_INFO);
-
+  LogComponentEnable("GbnNetDevice", LOG_LEVEL_INFO);
   Config::SetDefault ("ns3::DropTailQueue::MaxPackets", UintegerValue (4294967295));
 
-  NodeContainer nodes;
-  nodes.Create(2);
+  const uint32_t RCVR = 1, SNDR = 0;
 
   std::string rate = "5Mbps", delay = "1ms";
   double errorRate = 0.0;
@@ -34,36 +38,70 @@ main (int argc, char *argv[])
   cmd.AddValue("WindowSize", "Window size (W)", windowSize);
   cmd.Parse(argc, argv);
 
-  GbnNetDeviceHelper GbnNetDevice;
-  GbnNetDevice.SetDeviceAttribute("DataRate", StringValue (rate));
-  GbnNetDevice.SetChannelAttribute("Delay", StringValue (delay));
-  GbnNetDevice.SetNetDevicePointToPointMode(true);
+  NodeContainer gbnNodes;
+  gbnNodes.Create(2);
+  
+  GbnNetDeviceHelper gbn; // TODO: GbnNetDeviceHelper
+  gbn.SetDeviceAttribute("DataRate", StringValue (rate));
+  gbn.SetChannelAttribute("Delay", StringValue (delay));
+
 
   Ptr<RateErrorModel> rem = CreateObject<RateErrorModel>();
   rem->SetUnit(ns3::RateErrorModel::ERROR_UNIT_PACKET);
   rem->SetRate(errorRate);
 
-  GbnNetDevice.SetDeviceAttribute("ReceiveErrorModel", PointerValue(rem));
-  GbnNetDevice.SetDeviceAttribute ("WindowSize", UintegerValue (windowSize));
+  gbn.SetDeviceAttribute("ReceiveErrorModel", PointerValue(rem));
+  // gbn.SetDeviceAttribute ("WindowSize", UintegerValue (windowSize));
 
-  GbnNetDevice.Install(nodes);
+  NetDeviceContainer gbnDevices = gbn.Install(gbnNodes);
 
-  Address rcvrAddr = nodes.Get(1)->GetDevice(0)->GetAddress(); // Mac48Address
+  // --------------------------------------------------------------------------
+  // Install IP and assign IP addresses
+  InternetStackHelper stack;
+  stack.Install(gbnNodes);
 
-  GbnReceiverHelper rcvr;
+  Ipv4AddressHelper address;
 
-  ApplicationContainer receiverApps = rcvr.Install (nodes.Get (1));
-  receiverApps.Start(Seconds (1.0));
-  receiverApps.Stop(Seconds (10000000));
+  address.SetBase("10.1.1.0", "255.255.255.0");
+  Ipv4InterfaceContainer gbnInterfaces;
+  gbnInterfaces = address.Assign(gbnDevices);
+  // --------------------------------------------------------------------------
 
-  GbnSenderHelper sender(rcvrAddr);
+  // --------------------------------------------------------------------------
+  // Server
+  uint16_t port = 9;
+  OnOffHelper source("ns3::TcpSocketFactory",
+          InetSocketAddress(gbnInterfaces.GetAddress(RCVR), port));
+  source.SetAttribute("OnTime", StringValue("ns3::ConstantRandomVariable[Constant=1]"));
+  source.SetAttribute("OffTime", StringValue("ns3::ConstantRandomVariable[Constant=0]"));
+  source.SetAttribute("MaxBytes", UintegerValue(0));
 
-  ApplicationContainer senderApps = sender.Install (nodes.Get (0));
-  senderApps.Start (Seconds (2.0));
-  senderApps.Stop (Seconds (10));
+  ApplicationContainer sourceApps = source.Install(gbnNodes.Get(SNDR));
+  sourceApps.Start(Seconds (0.0));
+  // --------------------------------------------------------------------------
+
+  // --------------------------------------------------------------------------
+  // Client
+  PacketSinkHelper sink("ns3::TcpSocketFactory",
+                         InetSocketAddress(Ipv4Address::GetAny(), port));
+  ApplicationContainer sinkApps = sink.Install(gbnNodes.Get(RCVR));
+  sinkApps.Start(Seconds(0.0));
+
+  // Enable tracing for last received packet
+  Ptr<PacketSink> sink1 = DynamicCast<PacketSink>(sinkApps.Get(0));
+  sink1->TraceConnectWithoutContext("Rx", MakeCallback(&RxTracer));
+  // --------------------------------------------------------------------------
+
+  // Configure routing tables for all nodes
+  // NOTE: Commented out an assertion here
+  Ipv4GlobalRoutingHelper::PopulateRoutingTables();
+
+  Simulator::Stop(Seconds(10.0));
 
   Simulator::Run ();
   Simulator::Destroy ();
+
+  std::cout << "Throughput: " << sink1->GetTotalRx() * 8 / lastRx << "bps" << std::endl;
 
   return 0;
 }

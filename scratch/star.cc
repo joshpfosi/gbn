@@ -22,6 +22,7 @@
 #include "ns3/mobility-module.h"
 #include "ns3/csma-module.h"
 #include "ns3/internet-module.h"
+#include "ns3/gbn-module.h"
 
 using namespace ns3;
 
@@ -45,7 +46,7 @@ main (int argc, char *argv[])
   double errorRate      = 0.0;
   uint32_t maxBytes     = 1 << 16;
   bool verbose          = true;
-  bool tracing          = false;
+  bool tracing          = true;
   std::string gbnRate   = "5Mbps";
   std::string gbnDelay  = "2ms";
   std::string satRate   = "1Kbps";
@@ -71,9 +72,10 @@ main (int argc, char *argv[])
 
   if (verbose)
     {
-      LogComponentEnable ("UdpEchoClientApplication", LOG_LEVEL_INFO);
-      LogComponentEnable ("UdpEchoServerApplication", LOG_LEVEL_INFO);
+        LogComponentEnable("GbnNetDevice", LOG_LEVEL_INFO);
     }
+
+  Config::SetDefault ("ns3::DropTailQueue::MaxPackets", UintegerValue (4294967295));
 
   // --------------------------------------------------------------------------
   // Border routers
@@ -86,7 +88,7 @@ main (int argc, char *argv[])
   NodeContainer gbnNodes;
   gbnNodes.Create (5);
 
-  PointToPointHelper gbn; // TODO: Should use GBN links
+  PointToPointHelper gbn;
   gbn.SetDeviceAttribute("DataRate", StringValue(gbnRate));
   gbn.SetChannelAttribute("Delay",   StringValue(gbnDelay));
 
