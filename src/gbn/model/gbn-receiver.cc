@@ -82,9 +82,9 @@ void
 GbnReceiver::StopApplication (void)
 {
     NS_LOG_FUNCTION (this);
+    size_t throughput = (m_last_rx != 0) ? m_bytes_rx * 8 / (m_last_rx - 2) : 0;
     NS_LOG_DEBUG("RECEIVED " << m_bytes_rx << " bytes");
-    NS_LOG_DEBUG("THROUGHPUT "
-            << ((m_last_rx) ? m_bytes_rx * 8 / (m_last_rx - 2) : 0) << " bps");
+    NS_LOG_DEBUG("THROUGHPUT " << throughput << " bps");
 }
 
 bool 

@@ -189,8 +189,6 @@ private:
   // Points to next packet to be sent in window
   Window::iterator m_inflight;
 
-  Time timeoutTime;
-
   size_t m_expected_seqno;
   size_t m_seqno;
   size_t m_max_seqno;

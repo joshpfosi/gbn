@@ -23,15 +23,15 @@ main (int argc, char *argv[])
   NodeContainer nodes;
   nodes.Create(2);
 
-  std::string rate = "5Mbps", delay = "2ms";
+  std::string rate = "5Mbps", delay = "1ms";
   double errorRate = 0.0;
-  // size_t windowSize = 10;
+  uint64_t windowSize = 10;
 
   CommandLine cmd;
   cmd.AddValue("Rate", "Data rate of devices (R)", rate);
   cmd.AddValue("Delay", "Delay of channel (t_prop)", delay);
   cmd.AddValue("ErrorRate", "Receive error rate (P)", errorRate);
-  // cmd.AddValue("WindowSize", "Window size (W)", windowSize);
+  cmd.AddValue("WindowSize", "Window size (W)", windowSize);
   cmd.Parse(argc, argv);
 
   GbnNetDeviceHelper GbnNetDevice;
@@ -44,6 +44,7 @@ main (int argc, char *argv[])
   rem->SetRate(errorRate);
 
   GbnNetDevice.SetDeviceAttribute("ReceiveErrorModel", PointerValue(rem));
+  GbnNetDevice.SetDeviceAttribute ("WindowSize", UintegerValue (windowSize));
 
   GbnNetDevice.Install(nodes);
 
@@ -56,7 +57,6 @@ main (int argc, char *argv[])
   receiverApps.Stop(Seconds (10000000));
 
   GbnSenderHelper sender(rcvrAddr);
-  // sender.SetAttribute ("WindowSize", UintegerValue (windowSize));
 
   ApplicationContainer senderApps = sender.Install (nodes.Get (0));
   senderApps.Start (Seconds (2.0));

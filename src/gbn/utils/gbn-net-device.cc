@@ -231,7 +231,6 @@ GbnNetDevice::GbnNetDevice ()
     m_linkUp (false),
     m_wsize (200),
     m_window(),
-    timeoutTime(Seconds(1)),
     m_expected_seqno(0),
     m_seqno(0),
     m_max_seqno(65536)
@@ -341,9 +340,8 @@ GbnNetDevice::Receive (Ptr<Packet> packet, uint16_t protocol,
                         txTime = m_bps.CalculateBytesTxTime (dataPacket->GetSize ());
                     }
 
-                    NS_ASSERT(txTime < timeoutTime);
 
-                    packetPair.second = Simulator::Schedule (timeoutTime,
+                    packetPair.second = Simulator::Schedule (3 * txTime,
                             &GbnNetDevice::Timeout, this);
                     TransmitCompleteEvent = Simulator::Schedule (txTime,
                             &GbnNetDevice::TransmitComplete, this);
@@ -386,7 +384,9 @@ GbnNetDevice::Receive (Ptr<Packet> packet, uint16_t protocol,
                 NS_LOG_DEBUG("[RECEIVE] (Receiver) Received unexpected seqno="
                         << header.GetSeqno());
                 m_phyRxDropTrace (packet);
-                ackHeader.SetSeqno (m_expected_seqno - 1);
+                size_t ackSeqno = (m_expected_seqno == 0)
+                    ? 0 : m_expected_seqno - 1;
+                ackHeader.SetSeqno (ackSeqno);
             }
 
             Ptr<Packet> ack = Create<Packet>(0);
@@ -595,8 +595,7 @@ GbnNetDevice::SendFrom (Ptr<Packet> p, const Address& source, const Address& des
                 {
                     txTime = m_bps.CalculateBytesTxTime (p->GetSize ());
                 }
-                NS_ASSERT(txTime < timeoutTime);
-                packetPair.second = Simulator::Schedule (timeoutTime, &GbnNetDevice::Timeout, this);
+                packetPair.second = Simulator::Schedule (3 * txTime, &GbnNetDevice::Timeout, this);
                 TransmitCompleteEvent = Simulator::Schedule (txTime, &GbnNetDevice::TransmitComplete, this);
                 NS_LOG_DEBUG("[SEND FROM] (Sender) Scheduling packet "
                         << header.GetSeqno() << " for "
@@ -634,9 +633,8 @@ GbnNetDevice::Timeout ()
             txTime = m_bps.CalculateBytesTxTime (m_inflight->first->GetSize ());
         }
 
-        NS_ASSERT(txTime < timeoutTime);
 
-        m_inflight->second = Simulator::Schedule (timeoutTime, &GbnNetDevice::Timeout, this);
+        m_inflight->second = Simulator::Schedule (3 * txTime, &GbnNetDevice::Timeout, this);
         TransmitCompleteEvent = Simulator::Schedule (txTime, &GbnNetDevice::TransmitComplete, this);
     }
 }
@@ -685,9 +683,7 @@ GbnNetDevice::TransmitComplete ()
       txTime = m_bps.CalculateBytesTxTime (m_inflight->first->GetSize ());
   }
 
-  NS_ASSERT(txTime < timeoutTime);
-
-  m_inflight->second = Simulator::Schedule (timeoutTime, &GbnNetDevice::Timeout, this);
+  m_inflight->second = Simulator::Schedule (3 * txTime, &GbnNetDevice::Timeout, this);
   TransmitCompleteEvent = Simulator::Schedule (txTime, &GbnNetDevice::TransmitComplete, this);
   m_inflight->first->PeekHeader(h); // debugging
   NS_LOG_DEBUG("[TRANSMIT COMPLETE] (Sender) Scheduling packet "
